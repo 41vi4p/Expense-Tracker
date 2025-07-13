@@ -1,0 +1,11 @@
+{
+  "hosting": {
+    "site": "expense-tracker-41vi4p",
+    "public": "public",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ]
+  }
+}

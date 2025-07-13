@@ -27,6 +27,17 @@ export interface Category {
   type: 'income' | 'expense';
 }
 
+export interface Note {
+  id: string;
+  userId: string;
+  title: string;
+  content: string;
+  category: 'financial-goal' | 'budget-plan' | 'investment-idea' | 'expense-reminder' | 'general';
+  tags: string[];
+  createdAt: Date;
+  updatedAt: Date;
+}
+
 export const EXPENSE_CATEGORIES: Category[] = [
   { id: '1', name: 'Food & Dining', icon: '🍕', color: '#FF6B6B', type: 'expense' },
   { id: '2', name: 'Transportation', icon: '🚗', color: '#4ECDC4', type: 'expense' },

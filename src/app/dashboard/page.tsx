@@ -24,7 +24,7 @@ export default function DashboardPage() {
   const [stats, setStats] = useState({ totalIncome: 0, totalExpenses: 0, balance: 0 });
   const [loading, setLoading] = useState(true);
   const [showAddModal, setShowAddModal] = useState(false);
-  const [balanceVisible, setBalanceVisible] = useState(true);
+  const [balanceVisible, setBalanceVisible] = useState(false);
   const [chartType, setChartType] = useState<'pie' | 'bar'>('pie');
 
   useEffect(() => {
@@ -112,42 +112,54 @@ export default function DashboardPage() {
         </motion.div>
 
         {/* Stats Cards */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1 }}
-          className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8"
-        >
-          <StatsCard
-            title="Total Balance"
-            value={balanceVisible ? stats.balance : '****'}
-            icon={Wallet}
-            color="primary"
-            trend={stats.balance >= 0 ? 'up' : 'down'}
-            action={
-              <button
-                onClick={() => setBalanceVisible(!balanceVisible)}
-                className="text-foreground/60 hover:text-foreground transition-colors"
-              >
-                {balanceVisible ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-              </button>
-            }
-          />
-          <StatsCard
-            title="Total Income"
-            value={stats.totalIncome}
-            icon={TrendingUp}
-            color="success"
-            trend="up"
-          />
-          <StatsCard
-            title="Total Expenses"
-            value={stats.totalExpenses}
-            icon={TrendingDown}
-            color="secondary"
-            trend="down"
-          />
-        </motion.div>
+        <div className="space-y-3 sm:space-y-4 mb-6 sm:mb-8">
+          {/* Total Balance Card - Full Width on Mobile */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 }}
+          >
+            <StatsCard
+              title="Total Balance"
+              value={balanceVisible ? stats.balance : '****'}
+              icon={Wallet}
+              color="primary"
+              trend={stats.balance >= 0 ? 'up' : 'down'}
+              collapsed={!balanceVisible}
+              action={
+                <button
+                  onClick={() => setBalanceVisible(!balanceVisible)}
+                  className="text-foreground/60 hover:text-foreground transition-colors"
+                >
+                  {balanceVisible ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                </button>
+              }
+            />
+          </motion.div>
+
+          {/* Income and Expenses Cards - Side by Side on Mobile */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+            className="grid grid-cols-2 lg:grid-cols-2 gap-3 sm:gap-4"
+          >
+            <StatsCard
+              title="Total Income"
+              value={stats.totalIncome}
+              icon={TrendingUp}
+              color="success"
+              trend="up"
+            />
+            <StatsCard
+              title="Total Expenses"
+              value={stats.totalExpenses}
+              icon={TrendingDown}
+              color="secondary"
+              trend="down"
+            />
+          </motion.div>
+        </div>
 
         {/* Quick Actions */}
         <motion.div
@@ -182,14 +194,14 @@ export default function DashboardPage() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.25 }}
-          className="mb-8"
+          className="mb-6 sm:mb-8"
         >
           <div className="flex justify-between items-center mb-4">
-            <h2 className="text-xl font-display font-semibold">Financial Trends</h2>
+            <h2 className="text-lg sm:text-xl font-display font-semibold">Financial Trends</h2>
           </div>
-          <div className="backdrop-blur-glass border border-border/50 rounded-2xl p-6">
-            <h3 className="text-lg font-display font-semibold mb-4 flex items-center">
-              <TrendingUp className="w-5 h-5 mr-2 text-primary" />
+          <div className="backdrop-blur-glass border border-border/50 rounded-2xl p-4 sm:p-6">
+            <h3 className="text-base sm:text-lg font-display font-semibold mb-4 flex items-center">
+              <TrendingUp className="w-4 h-4 sm:w-5 sm:h-5 mr-2 text-primary" />
               6-Month Trend
             </h3>
             <TrendChart transactions={transactions} months={6} />

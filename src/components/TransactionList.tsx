@@ -32,9 +32,9 @@ export default function TransactionList({ transactions, onTransactionUpdate, use
   };
 
   const formatAmount = (amount: number, type: 'income' | 'expense') => {
-    const formatted = new Intl.NumberFormat('en-US', {
+    const formatted = new Intl.NumberFormat('en-IN', {
       style: 'currency',
-      currency: 'USD',
+      currency: 'INR',
       minimumFractionDigits: 0,
       maximumFractionDigits: 0,
     }).format(amount);
@@ -77,22 +77,22 @@ export default function TransactionList({ transactions, onTransactionUpdate, use
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: index * 0.1 }}
-            className="backdrop-blur-glass border border-border/50 rounded-xl p-4 hover:border-primary/30 transition-all duration-300 group"
+            className="backdrop-blur-glass border border-border/50 rounded-xl p-3 sm:p-4 hover:border-primary/30 transition-all duration-300 group"
           >
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-4">
+            <div className="flex items-center justify-between gap-2">
+              <div className="flex items-center space-x-3 sm:space-x-4 flex-1 min-w-0">
                 <div 
-                  className="w-12 h-12 rounded-xl flex items-center justify-center text-xl border border-border/30"
+                  className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl flex items-center justify-center text-lg sm:text-xl border border-border/30 flex-shrink-0"
                   style={{ backgroundColor: `${category.color}20` }}
                 >
                   {category.icon}
                 </div>
                 
                 <div className="flex-1 min-w-0">
-                  <h3 className="font-body font-semibold text-foreground truncate">
+                  <h3 className="font-body font-semibold text-foreground truncate text-sm sm:text-base">
                     {transaction.description}
                   </h3>
-                  <div className="flex items-center space-x-2 text-sm text-foreground/70">
+                  <div className="flex items-center space-x-1 sm:space-x-2 text-xs sm:text-sm text-foreground/70">
                     <span>{category.name}</span>
                     <span>•</span>
                     <span>{formatDate(transaction.date)}</span>
@@ -100,9 +100,9 @@ export default function TransactionList({ transactions, onTransactionUpdate, use
                 </div>
               </div>
 
-              <div className="flex items-center space-x-3">
+              <div className="flex items-center space-x-2 sm:space-x-3 flex-shrink-0">
                 <div className="text-right">
-                  <p className={`font-display font-bold text-lg ${
+                  <p className={`font-display font-bold text-base sm:text-lg ${
                     transaction.type === 'income' ? 'text-success' : 'text-secondary'
                   }`}>
                     {formatAmount(transaction.amount, transaction.type)}

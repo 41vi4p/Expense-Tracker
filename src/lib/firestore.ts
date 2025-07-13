@@ -11,7 +11,7 @@ import {
   Timestamp,
 } from 'firebase/firestore';
 import { db } from './firebase';
-import { Transaction } from '@/types';
+import { Transaction, Note } from '@/types';
 import { logUserAction, LOG_ACTIONS } from './logging';
 
 export const addTransaction = async (transaction: Omit<Transaction, 'id' | 'createdAt'>) => {
@@ -62,11 +62,6 @@ export const getUserTransactions = async (userId: string): Promise<Transaction[]
       date: doc.data().date.toDate(),
       createdAt: doc.data().createdAt.toDate(),
     })) as Transaction[];
-    
-    // Log the view action
-    await logUserAction(userId, 'transaction', LOG_ACTIONS.TRANSACTION.VIEW, {
-      transactionCount: transactions.length
-    });
     
     return transactions;
   } catch (error) {
@@ -159,6 +154,90 @@ export const getUserStats = async (userId: string) => {
     return { totalIncome, totalExpenses, balance };
   } catch (error) {
     console.error('Error getting user stats:', error);
+    throw error;
+  }
+};
+
+// Notes functionality
+export const addNote = async (note: Omit<Note, 'id' | 'createdAt' | 'updatedAt'>) => {
+  try {
+    const noteData = {
+      ...note,
+      createdAt: Timestamp.now(),
+      updatedAt: Timestamp.now(),
+    };
+    
+    const docRef = await addDoc(collection(db, 'notes'), noteData);
+    
+    await logUserAction(note.userId, 'profile', 'create_note', {
+      noteId: docRef.id,
+      category: note.category,
+      title: note.title
+    });
+    
+    return docRef.id;
+  } catch (error) {
+    console.error('Error adding note:', error);
+    throw error;
+  }
+};
+
+export const getUserNotes = async (userId: string): Promise<Note[]> => {
+  try {
+    const q = query(
+      collection(db, 'notes'),
+      where('userId', '==', userId),
+      orderBy('updatedAt', 'desc')
+    );
+    
+    const querySnapshot = await getDocs(q);
+    const notes = querySnapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data(),
+      createdAt: doc.data().createdAt.toDate(),
+      updatedAt: doc.data().updatedAt.toDate(),
+    })) as Note[];
+    
+    return notes;
+  } catch (error) {
+    console.error('Error getting notes:', error);
+    throw error;
+  }
+};
+
+export const updateNote = async (id: string, updates: Partial<Note>) => {
+  try {
+    const noteRef = doc(db, 'notes', id);
+    const updateData: any = { 
+      ...updates,
+      updatedAt: Timestamp.now()
+    };
+    
+    await updateDoc(noteRef, updateData);
+    
+    if (updates.userId) {
+      await logUserAction(updates.userId, 'profile', 'update_note', {
+        noteId: id,
+        updatedFields: Object.keys(updates)
+      });
+    }
+  } catch (error) {
+    console.error('Error updating note:', error);
+    throw error;
+  }
+};
+
+export const deleteNote = async (id: string, userId?: string) => {
+  try {
+    await deleteDoc(doc(db, 'notes', id));
+    
+    if (userId) {
+      await logUserAction(userId, 'profile', 'delete_note', {
+        noteId: id
+      });
+    }
+  } catch (error) {
+    console.error('Error deleting note:', error);
     throw error;
   }
 };

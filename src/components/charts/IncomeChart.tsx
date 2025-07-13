@@ -31,9 +31,9 @@ export default function IncomeChart({ transactions, type = 'pie' }: IncomeChartP
     .map(item => ({
       ...item,
       value: item.amount,
-      formattedValue: new Intl.NumberFormat('en-US', {
+      formattedValue: new Intl.NumberFormat('en-IN', {
         style: 'currency',
-        currency: 'USD',
+        currency: 'INR',
         minimumFractionDigits: 0,
       }).format(item.amount)
     }));
@@ -142,7 +142,7 @@ export default function IncomeChart({ transactions, type = 'pie' }: IncomeChartP
             <YAxis 
               stroke="var(--foreground)"
               fontSize={12}
-              tickFormatter={(value) => `$${value}`}
+              tickFormatter={(value) => `₹${value}`}
             />
             <Tooltip content={<CustomTooltip />} />
             <Bar 

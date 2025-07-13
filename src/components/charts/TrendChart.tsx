@@ -37,19 +37,19 @@ export default function TrendChart({ transactions, months = 6 }: TrendChartProps
         income,
         expenses,
         balance,
-        formattedIncome: new Intl.NumberFormat('en-US', {
+        formattedIncome: new Intl.NumberFormat('en-IN', {
           style: 'currency',
-          currency: 'USD',
+          currency: 'INR',
           minimumFractionDigits: 0,
         }).format(income),
-        formattedExpenses: new Intl.NumberFormat('en-US', {
+        formattedExpenses: new Intl.NumberFormat('en-IN', {
           style: 'currency',
-          currency: 'USD',
+          currency: 'INR',
           minimumFractionDigits: 0,
         }).format(expenses),
-        formattedBalance: new Intl.NumberFormat('en-US', {
+        formattedBalance: new Intl.NumberFormat('en-IN', {
           style: 'currency',
-          currency: 'USD',
+          currency: 'INR',
           minimumFractionDigits: 0,
         }).format(balance),
       });
@@ -130,7 +130,7 @@ export default function TrendChart({ transactions, months = 6 }: TrendChartProps
           <YAxis 
             stroke="var(--foreground)"
             fontSize={12}
-            tickFormatter={(value) => `$${value}`}
+            tickFormatter={(value) => `₹${value}`}
           />
           <Tooltip content={<CustomTooltip />} />
           

@@ -21,12 +21,20 @@ export interface ActivityLog {
   ipAddress?: string;
 }
 
+// Set to false to temporarily disable all logging
+const LOGGING_ENABLED = true;
+
 export const logUserAction = async (
   userId: string,
   category: ActivityLog['category'],
   action: string,
   details: Record<string, any> = {}
 ): Promise<void> => {
+  // Skip logging if disabled or no userId provided
+  if (!LOGGING_ENABLED || !userId) {
+    return;
+  }
+
   try {
     const logData = {
       userId,
@@ -40,7 +48,10 @@ export const logUserAction = async (
 
     await addDoc(collection(db, 'activity_logs'), logData);
   } catch (error) {
-    console.error('Error logging user action:', error);
+    // Silently fail for logging errors - don't spam console in production
+    if (process.env.NODE_ENV === 'development') {
+      console.warn('Activity logging failed:', error);
+    }
     // Don't throw error as logging shouldn't break the app
   }
 };

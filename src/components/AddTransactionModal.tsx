@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, DollarSign, FileText, Calendar, Tag } from 'lucide-react';
+import { X, FileText, Calendar, Tag } from 'lucide-react';
 import { EXPENSE_CATEGORIES, INCOME_CATEGORIES } from '@/types';
 import { addTransaction } from '@/lib/firestore';
 import toast from 'react-hot-toast';
@@ -95,7 +95,7 @@ export default function AddTransactionModal({ onClose, onTransactionAdded, userI
                     setType('expense');
                     setCategory('');
                   }}
-                  className={`p-4 rounded-xl border transition-all font-body ${
+                  className={`p-3 sm:p-4 rounded-xl border transition-all font-body text-sm sm:text-base ${
                     type === 'expense'
                       ? 'border-secondary bg-secondary/10 text-secondary'
                       : 'border-border/50 hover:border-secondary/50'
@@ -111,7 +111,7 @@ export default function AddTransactionModal({ onClose, onTransactionAdded, userI
                     setType('income');
                     setCategory('');
                   }}
-                  className={`p-4 rounded-xl border transition-all font-body ${
+                  className={`p-3 sm:p-4 rounded-xl border transition-all font-body text-sm sm:text-base ${
                     type === 'income'
                       ? 'border-success bg-success/10 text-success'
                       : 'border-border/50 hover:border-success/50'
@@ -128,7 +128,7 @@ export default function AddTransactionModal({ onClose, onTransactionAdded, userI
                 Amount
               </label>
               <div className="relative">
-                <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-foreground/50" />
+                <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-foreground/50 font-semibold text-lg">₹</span>
                 <input
                   type="number"
                   step="0.01"

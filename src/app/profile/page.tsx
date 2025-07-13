@@ -168,7 +168,7 @@ export default function ProfilePage() {
                   <p className="text-sm text-foreground/70">Your preferred currency format</p>
                 </div>
                 <span className="px-4 py-2 bg-surface border border-border/50 rounded-lg font-body text-sm">
-                  USD ($)
+                  INR (₹)
                 </span>
               </div>
 

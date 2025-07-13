@@ -114,9 +114,9 @@ export default function AnalyticsPage() {
   };
 
   const formatAmount = (amount: number) => {
-    return new Intl.NumberFormat('en-US', {
+    return new Intl.NumberFormat('en-IN', {
       style: 'currency',
-      currency: 'USD',
+      currency: 'INR',
       minimumFractionDigits: 0,
       maximumFractionDigits: 0,
     }).format(amount);
@@ -355,7 +355,7 @@ export default function AnalyticsPage() {
               <p className="text-2xl font-display font-bold text-accent">
                 {transactions.length > 0 ? formatAmount(
                   transactions.reduce((sum, t) => sum + t.amount, 0) / transactions.length
-                ) : '$0'}
+                ) : '₹0'}
               </p>
               <p className="text-sm text-foreground/70 font-body">Avg. Transaction</p>
             </div>

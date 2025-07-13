@@ -62,11 +62,11 @@ export default function LoginPage() {
             <div className="w-20 h-20 mx-auto mb-4 bg-gradient-primary rounded-2xl flex items-center justify-center glow">
               <Zap className="w-10 h-10 text-white" />
             </div>
-            <h1 className="text-3xl font-display font-bold text-gradient mb-2">
-              ExpenseTracker Pro
+            <h1 className="text-2xl sm:text-3xl font-display font-bold text-gradient mb-2">
+              ExpenseTracker
             </h1>
             <p className="text-foreground/70 font-body">
-              Welcome to the future of finance management
+             By 41vi4p
             </p>
           </motion.div>
 

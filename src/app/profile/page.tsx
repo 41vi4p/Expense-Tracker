@@ -4,7 +4,6 @@ import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { User, Mail, Calendar, Settings, LogOut } from 'lucide-react';
-import { useTheme } from '@/contexts/ThemeContext';
 import { useAuth } from '@/contexts/AuthContext';
 import Header from '@/components/Header';
 import Image from 'next/image';
@@ -12,7 +11,6 @@ import Image from 'next/image';
 export default function ProfilePage() {
   const { user, loading, signOut } = useAuth();
   const router = useRouter();
-  const { theme, toggleTheme } = useTheme();
 
   useEffect(() => {
     if (!loading && !user) {
@@ -152,14 +150,9 @@ export default function ProfilePage() {
                   <h4 className="font-body font-medium">Theme</h4>
                   <p className="text-sm text-foreground/70">Choose your preferred appearance</p>
                 </div>
-                <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  onClick={toggleTheme}
-                  className="px-4 py-2 bg-surface border border-border/50 rounded-lg font-body text-sm hover:border-primary/50 transition-all"
-                >
-                  {theme === 'dark' ? 'Dark Mode' : 'Light Mode'}
-                </motion.button>
+                <div className="px-4 py-2 bg-surface border border-border/50 rounded-lg font-body text-sm">
+                  Dark Mode
+                </div>
               </div>
 
               <div className="flex items-center justify-between">

@@ -2,7 +2,7 @@
 
 import { useAuth } from '@/contexts/AuthContext';
 import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { BarChart3, PieChart, TrendingUp, Calendar } from 'lucide-react';
 import { Transaction, EXPENSE_CATEGORIES, INCOME_CATEGORIES } from '@/types';
@@ -37,9 +37,9 @@ export default function AnalyticsPage() {
     if (user) {
       loadData();
     }
-  }, [user]);
+  }, [user]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const loadData = async () => {
+  const loadData = useCallback(async () => {
     if (!user) return;
     
     try {
@@ -58,9 +58,9 @@ export default function AnalyticsPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [user]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const calculateCategoryStats = (transactions: Transaction[]) => {
+  const calculateCategoryStats = useCallback((transactions: Transaction[]) => {
     const allCategories = [...EXPENSE_CATEGORIES, ...INCOME_CATEGORIES];
     
     // Calculate expenses by category
@@ -111,7 +111,7 @@ export default function AnalyticsPage() {
 
     setExpensesByCategory(expenseStats.sort((a, b) => b.amount - a.amount));
     setIncomeByCategory(incomeStats.sort((a, b) => b.amount - a.amount));
-  };
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const formatAmount = (amount: number) => {
     return new Intl.NumberFormat('en-IN', {

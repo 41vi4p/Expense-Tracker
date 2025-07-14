@@ -3,7 +3,6 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useTheme } from '@/contexts/ThemeContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { 
   Menu, 
@@ -22,7 +21,6 @@ import { logUserAction, LOG_ACTIONS } from '@/lib/logging';
 
 export default function Header() {
   const { user, signOut } = useAuth();
-  const { theme } = useTheme();
   const router = useRouter();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);

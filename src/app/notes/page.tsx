@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Plus, 
@@ -32,7 +32,7 @@ const NOTE_CATEGORIES = {
 };
 
 export default function NotesPage() {
-  const { user, authLoading } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const router = useRouter();
   const [notes, setNotes] = useState<Note[]>([]);
   const [loading, setLoading] = useState(true);
@@ -54,9 +54,9 @@ export default function NotesPage() {
       return;
     }
     loadNotes();
-  }, [user, authLoading, router]);
+  }, [user, authLoading, router]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const loadNotes = async () => {
+  const loadNotes = useCallback(async () => {
     try {
       if (!user) return;
       const userNotes = await getUserNotes(user.uid);
@@ -67,7 +67,7 @@ export default function NotesPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [user]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

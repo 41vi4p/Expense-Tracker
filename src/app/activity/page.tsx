@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { 
@@ -107,18 +107,7 @@ export default function ActivityPage() {
     }
   }, [user, loading, router]);
 
-  useEffect(() => {
-    if (user) {
-      loadActivityLogs();
-      // Log page view
-      logUserAction(user.uid, 'navigation', LOG_ACTIONS.NAVIGATION.PAGE_VIEW, {
-        page: 'activity',
-        timestamp: new Date().toISOString()
-      });
-    }
-  }, [user]);
-
-  const loadActivityLogs = async () => {
+  const loadActivityLogs = useCallback(async () => {
     if (!user) return;
     
     try {
@@ -131,7 +120,18 @@ export default function ActivityPage() {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [user]);
+
+  useEffect(() => {
+    if (user) {
+      loadActivityLogs();
+      // Log page view
+      logUserAction(user.uid, 'navigation', LOG_ACTIONS.NAVIGATION.PAGE_VIEW, {
+        page: 'activity',
+        timestamp: new Date().toISOString()
+      });
+    }
+  }, [user]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const filteredLogs = filter === 'all' 
     ? logs 

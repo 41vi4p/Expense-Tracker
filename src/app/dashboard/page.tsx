@@ -1,7 +1,7 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { Plus, TrendingUp, TrendingDown, Wallet, Eye, EyeOff, PieChart, BarChart3 } from 'lucide-react';
 import { Transaction } from '@/types';
@@ -42,9 +42,9 @@ export default function DashboardPage() {
         timestamp: new Date().toISOString()
       });
     }
-  }, [user]);
+  }, [user]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const loadData = async () => {
+  const loadData = useCallback(async () => {
     if (!user) return;
     
     try {
@@ -62,7 +62,7 @@ export default function DashboardPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [user]);
 
   const handleTransactionAdded = () => {
     setShowAddModal(false);

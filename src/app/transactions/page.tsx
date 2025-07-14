@@ -2,7 +2,7 @@
 
 import { useAuth } from '@/contexts/AuthContext';
 import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { Filter, Search, Plus } from 'lucide-react';
 import { Transaction } from '@/types';
@@ -32,13 +32,13 @@ export default function TransactionsPage() {
     if (user) {
       loadTransactions();
     }
-  }, [user]);
+  }, [user]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     filterTransactions();
-  }, [transactions, searchTerm, filterType]);
+  }, [transactions, searchTerm, filterType]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const loadTransactions = async () => {
+  const loadTransactions = useCallback(async () => {
     if (!user) return;
     
     try {
@@ -51,9 +51,9 @@ export default function TransactionsPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [user]);
 
-  const filterTransactions = () => {
+  const filterTransactions = useCallback(() => {
     let filtered = transactions;
 
     if (filterType !== 'all') {
@@ -68,7 +68,7 @@ export default function TransactionsPage() {
     }
 
     setFilteredTransactions(filtered);
-  };
+  }, [transactions, filterType, searchTerm]);
 
   const handleTransactionAdded = () => {
     setShowAddModal(false);

@@ -11,8 +11,6 @@ import {
 import { auth, googleProvider, isFirebaseConfigured } from '@/lib/firebase';
 import { logUserAction } from '@/lib/logging';
 import toast from 'react-hot-toast';
-import { is } from 'date-fns/locale';
-import { firebaseConfig } from '@/lib/firebase';
 
 interface AuthContextType {
   user: User | null;
@@ -67,7 +65,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       if(!isFirebaseConfigured){
         toast.error('Authentication is not configured');
         console.log(isFirebaseConfigured);
-        console.log(firebaseConfig)
         return null;
       }
       if (!auth ) {

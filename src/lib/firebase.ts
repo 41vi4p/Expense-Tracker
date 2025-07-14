@@ -15,7 +15,6 @@ const firebaseConfig = {
 const isFirebaseConfigured = firebaseConfig.apiKey && 
   firebaseConfig.authDomain && 
   firebaseConfig.projectId;
-export { firebaseConfig };
 // Initialize Firebase only if properly configured
 const app = isFirebaseConfigured && getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0];
 

@@ -8,7 +8,7 @@ import {
   onAuthStateChanged,
   UserCredential
 } from 'firebase/auth';
-import { auth, googleProvider } from '@/lib/firebase';
+import { auth, googleProvider, isFirebaseConfigured } from '@/lib/firebase';
 import { logUserAction } from '@/lib/logging';
 import toast from 'react-hot-toast';
 
@@ -34,6 +34,11 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    if (!isFirebaseConfigured || !auth) {
+      setLoading(false);
+      return;
+    }
+
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       setUser(user);
       setLoading(false);
@@ -52,6 +57,11 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   const signInWithGoogle = async (): Promise<UserCredential | null> => {
     try {
+      if (!isFirebaseConfigured || !auth || !googleProvider) {
+        toast.error('Authentication is not configured');
+        return null;
+      }
+      
       setLoading(true);
       const result = await signInWithPopup(auth, googleProvider);
       
@@ -81,6 +91,10 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   const signOut = async (): Promise<void> => {
     try {
+      if (!isFirebaseConfigured || !auth) {
+        return;
+      }
+      
       if (user) {
         await logUserAction(user.uid, 'auth', 'logout', {
           email: user.email,

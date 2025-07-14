@@ -8,7 +8,7 @@ import {
   limit,
   Timestamp 
 } from 'firebase/firestore';
-import { db } from './firebase';
+import { db, isFirebaseConfigured } from './firebase';
 
 export interface ActivityLog {
   id: string;
@@ -30,8 +30,8 @@ export const logUserAction = async (
   action: string,
   details: Record<string, any> = {}
 ): Promise<void> => {
-  // Skip logging if disabled or no userId provided
-  if (!LOGGING_ENABLED || !userId) {
+  // Skip logging if disabled, no userId provided, or Firebase not configured
+  if (!LOGGING_ENABLED || !userId || !isFirebaseConfigured || !db) {
     return;
   }
 
@@ -61,6 +61,9 @@ export const getUserActivityLogs = async (
   limitCount: number = 50
 ): Promise<ActivityLog[]> => {
   try {
+    if (!isFirebaseConfigured || !db) {
+      return [];
+    }
     const q = query(
       collection(db, 'activity_logs'),
       where('userId', '==', userId),
@@ -84,6 +87,9 @@ export const getSystemActivityLogs = async (
   limitCount: number = 100
 ): Promise<ActivityLog[]> => {
   try {
+    if (!isFirebaseConfigured || !db) {
+      return [];
+    }
     const q = query(
       collection(db, 'activity_logs'),
       orderBy('timestamp', 'desc'),

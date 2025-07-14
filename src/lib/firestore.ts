@@ -10,12 +10,16 @@ import {
   orderBy,
   Timestamp,
 } from 'firebase/firestore';
-import { db } from './firebase';
+import { db, isFirebaseConfigured } from './firebase';
 import { Transaction, Note } from '@/types';
 import { logUserAction, LOG_ACTIONS } from './logging';
 
+
 export const addTransaction = async (transaction: Omit<Transaction, 'id' | 'createdAt'>) => {
   try {
+    if (!isFirebaseConfigured || !db) {
+      throw new Error('Firebase is not configured');
+    }
     const transactionData = {
       ...transaction,
       date: Timestamp.fromDate(transaction.date),
@@ -49,6 +53,9 @@ export const addTransaction = async (transaction: Omit<Transaction, 'id' | 'crea
 
 export const getUserTransactions = async (userId: string): Promise<Transaction[]> => {
   try {
+    if (!isFirebaseConfigured || !db) {
+      return [];
+    }
     const q = query(
       collection(db, 'transactions'),
       where('userId', '==', userId),
@@ -79,6 +86,9 @@ export const getUserTransactions = async (userId: string): Promise<Transaction[]
 
 export const updateTransaction = async (id: string, updates: Partial<Transaction>) => {
   try {
+    if (!isFirebaseConfigured || !db) {
+      throw new Error('Firebase is not configured');
+    }
     const transactionRef = doc(db, 'transactions', id);
     const updateData: any = { ...updates };
     
@@ -113,6 +123,9 @@ export const updateTransaction = async (id: string, updates: Partial<Transaction
 
 export const deleteTransaction = async (id: string, userId?: string) => {
   try {
+    if (!isFirebaseConfigured || !db) {
+      throw new Error('Firebase is not configured');
+    }
     await deleteDoc(doc(db, 'transactions', id));
     
     // Log the delete action
@@ -139,6 +152,9 @@ export const deleteTransaction = async (id: string, userId?: string) => {
 
 export const getUserStats = async (userId: string) => {
   try {
+    if (!isFirebaseConfigured || !db) {
+      return { totalIncome: 0, totalExpenses: 0, balance: 0 };
+    }
     const transactions = await getUserTransactions(userId);
     
     const totalIncome = transactions
@@ -161,6 +177,9 @@ export const getUserStats = async (userId: string) => {
 // Notes functionality
 export const addNote = async (note: Omit<Note, 'id' | 'createdAt' | 'updatedAt'>) => {
   try {
+    if (!isFirebaseConfigured || !db) {
+      throw new Error('Firebase is not configured');
+    }
     const noteData = {
       ...note,
       createdAt: Timestamp.now(),
@@ -184,6 +203,9 @@ export const addNote = async (note: Omit<Note, 'id' | 'createdAt' | 'updatedAt'>
 
 export const getUserNotes = async (userId: string): Promise<Note[]> => {
   try {
+    if (!isFirebaseConfigured || !db) {
+      return [];
+    }
     const q = query(
       collection(db, 'notes'),
       where('userId', '==', userId),
@@ -207,6 +229,9 @@ export const getUserNotes = async (userId: string): Promise<Note[]> => {
 
 export const updateNote = async (id: string, updates: Partial<Note>) => {
   try {
+    if (!isFirebaseConfigured || !db) {
+      throw new Error('Firebase is not configured');
+    }
     const noteRef = doc(db, 'notes', id);
     const updateData: any = { 
       ...updates,
@@ -229,6 +254,9 @@ export const updateNote = async (id: string, updates: Partial<Note>) => {
 
 export const deleteNote = async (id: string, userId?: string) => {
   try {
+    if (!isFirebaseConfigured || !db) {
+      throw new Error('Firebase is not configured');
+    }
     await deleteDoc(doc(db, 'notes', id));
     
     if (userId) {

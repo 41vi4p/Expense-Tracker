@@ -1,5 +1,8 @@
 'use client';
 
+// Force dynamic rendering to avoid Firebase initialization during build
+export const dynamic = 'force-dynamic';
+
 import { useRouter } from 'next/navigation';
 import { useEffect, useState, useCallback } from 'react';
 import { motion } from 'framer-motion';

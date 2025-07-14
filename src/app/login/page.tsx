@@ -26,6 +26,7 @@ export default function LoginPage() {
   }, []);
 
   const handleGoogleSignIn = async () => {
+    console.log('Google sign-in initiated');
     await signInWithGoogle();
   };
 

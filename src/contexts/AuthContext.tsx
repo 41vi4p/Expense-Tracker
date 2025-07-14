@@ -57,8 +57,21 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   const signInWithGoogle = async (): Promise<UserCredential | null> => {
     try {
-      if (!isFirebaseConfigured || !auth || !googleProvider) {
+      //changes
+      // if (!isFirebaseConfigured || !auth || !googleProvider) {
+      //   toast.error('Authentication is not configured');
+      //   return null;
+      // }
+      if(!isFirebaseConfigured){
         toast.error('Authentication is not configured');
+        return null;
+      }
+      if (!auth ) {
+        console.error('Firebase auth  is not initialized');
+        return null;
+      }
+      if (!googleProvider) {
+        console.error('Google provider is not initialized');
         return null;
       }
       

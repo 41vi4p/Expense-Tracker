@@ -22,7 +22,6 @@ A futuristic expense tracking application built with Next.js, Firebase, and mode
 - **Charts**: Chart.js, React Chart.js 2, Recharts
 - **UI Components**: Framer Motion, React Hot Toast
 - **Icons**: Lucide React
-- **Fonts**: Orbitron, Rajdhani (Google Fonts)
 
 ## 📦 Installation
 

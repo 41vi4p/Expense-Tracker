@@ -1,4 +1,4 @@
-# ExpenseTracker - Sci-Fi Finance Manager
+# ExpenseTracker
 
 A futuristic expense tracking application built with Next.js, Firebase, and modern UI components. Features a beautiful sci-fi themed interface with dark/light mode support and Google authentication.
 

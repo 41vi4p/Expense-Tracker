@@ -33,8 +33,7 @@ export default function AddTransactionModal({ onClose, onTransactionAdded, userI
 
     setLoading(true);
     try {
-      await addTransaction({
-        userId,
+      await addTransaction(userId, {
         type,
         amount: parseFloat(amount),
         description,

@@ -14,7 +14,9 @@ import {
   CreditCard,
   Zap,
   Activity,
-  FileText
+  FileText,
+  Settings,
+  Info
 } from 'lucide-react';
 import Image from 'next/image';
 import { logUserAction, LOG_ACTIONS } from '@/lib/logging';
@@ -55,12 +57,12 @@ export default function Header() {
         <div className="flex items-center justify-between">
           {/* Left side - Mobile Menu Button + Logo */}
           <div className="flex items-center space-x-3">
-            {/* Mobile Menu Button */}
+            {/* Mobile Menu Button - Hidden on mobile, visible on tablet */}
             <motion.button
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.9 }}
               onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="lg:hidden p-2 rounded-lg backdrop-blur-glass border border-border/50 hover:border-primary/50 transition-all"
+              className="hidden md:block lg:hidden p-2 rounded-lg backdrop-blur-glass border border-border/50 hover:border-primary/50 transition-all"
             >
               {isMenuOpen ? (
                 <X className="w-5 h-5 text-primary" />
@@ -155,6 +157,26 @@ export default function Header() {
                       <button
                         onClick={() => {
                           setIsProfileOpen(false);
+                          router.push('/settings');
+                        }}
+                        className="w-full flex items-center space-x-3 p-2 rounded-lg hover:bg-surface transition-colors text-left"
+                      >
+                        <Settings className="w-4 h-4" />
+                        <span className="font-body text-sm">Settings</span>
+                      </button>
+                      <button
+                        onClick={() => {
+                          setIsProfileOpen(false);
+                          router.push('/about');
+                        }}
+                        className="w-full flex items-center space-x-3 p-2 rounded-lg hover:bg-surface transition-colors text-left"
+                      >
+                        <Info className="w-4 h-4" />
+                        <span className="font-body text-sm">About</span>
+                      </button>
+                      <button
+                        onClick={() => {
+                          setIsProfileOpen(false);
                           signOut();
                         }}
                         className="w-full flex items-center space-x-3 p-2 rounded-lg hover:bg-surface transition-colors text-left text-error"
@@ -170,14 +192,14 @@ export default function Header() {
           </div>
         </div>
 
-        {/* Mobile Navigation */}
+        {/* Mobile Navigation - Hidden on mobile, visible on tablet */}
         <AnimatePresence>
           {isMenuOpen && (
             <motion.nav
               initial={{ opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: 'auto' }}
               exit={{ opacity: 0, height: 0 }}
-              className="lg:hidden mt-4 pt-4 border-t border-border/50"
+              className="hidden md:block lg:hidden mt-4 pt-4 border-t border-border/50"
             >
               <div className="space-y-2">
                 {navItems.map((item) => (

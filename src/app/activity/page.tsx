@@ -25,6 +25,7 @@ import { getUserActivityLogs, ActivityLog, logUserAction, LOG_ACTIONS } from '@/
 import Header from '@/components/Header';
 import { format } from 'date-fns';
 import toast from 'react-hot-toast';
+import BottomNavigation from '@/components/BottomNavigation';
 
 const getActionIcon = (category: string, action: string) => {
   switch (category) {
@@ -165,7 +166,7 @@ export default function ActivityPage() {
     <div className="min-h-screen bg-gradient-to-br from-background via-surface-dark to-background">
       <Header />
       
-      <main className="container mx-auto px-4 py-6">
+      <main className="container mx-auto px-4 py-6 pb-24 lg:pb-6">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -298,12 +299,8 @@ export default function ActivityPage() {
         )}
       </main>
 
-      {/* Footer */}
-      <footer className="mt-16 py-8 text-center">
-        <p className="text-sm text-foreground/50 font-body">
-          Made by David Porathur
-        </p>
-      </footer>
+      
+      <BottomNavigation />
     </div>
   );
 }

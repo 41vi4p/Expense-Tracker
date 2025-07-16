@@ -13,7 +13,7 @@ import { db, isFirebaseConfigured } from './firebase';
 export interface ActivityLog {
   id: string;
   userId: string;
-  category: 'auth' | 'transaction' | 'profile' | 'navigation' | 'system';
+  category: 'auth' | 'transaction' | 'profile' | 'navigation' | 'system' | 'settings';
   action: string;
   details: Record<string, any>;
   timestamp: Date;
@@ -136,5 +136,10 @@ export const LOG_ACTIONS = {
   SYSTEM: {
     ERROR: 'error',
     PERFORMANCE: 'performance_metric'
+  },
+  SETTINGS: {
+    DATA_EXPORT: 'data_export',
+    DATA_IMPORT: 'data_import',
+    DATA_DELETE: 'data_delete'
   }
 } as const;

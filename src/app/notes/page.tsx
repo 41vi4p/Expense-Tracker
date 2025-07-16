@@ -25,6 +25,7 @@ import Header from '@/components/Header';
 import { Note } from '@/types';
 import { getUserNotes, addNote, updateNote, deleteNote } from '@/lib/firestore';
 import toast from 'react-hot-toast';
+import BottomNavigation from '@/components/BottomNavigation';
 
 const NOTE_CATEGORIES = {
   'financial-goal': { name: 'Financial Goal', icon: Target, color: '#3B82F6' },
@@ -162,7 +163,7 @@ export default function NotesPage() {
     <div className="min-h-screen bg-gradient-to-br from-background via-surface-dark to-background">
       <Header />
       
-      <main className="container mx-auto px-4 py-4 sm:py-6">
+      <main className="container mx-auto px-4 py-4 sm:py-6 pb-24 lg:pb-6">
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -478,6 +479,8 @@ export default function NotesPage() {
           </motion.div>
         )}
       </AnimatePresence>
+      
+      <BottomNavigation />
     </div>
   );
 }

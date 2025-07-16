@@ -13,6 +13,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { logUserAction, LOG_ACTIONS } from '@/lib/logging';
 import toast from 'react-hot-toast';
 import Header from '@/components/Header';
+import BottomNavigation from '@/components/BottomNavigation';
 import StatsCard from '@/components/StatsCard';
 import TransactionList from '@/components/TransactionList';
 import AddTransactionModal from '@/components/AddTransactionModal';
@@ -29,6 +30,7 @@ export default function DashboardPage() {
   const [showAddModal, setShowAddModal] = useState(false);
   const [balanceVisible, setBalanceVisible] = useState(false);
   const [chartType, setChartType] = useState<'pie' | 'bar'>('pie');
+  const [trendPeriod, setTrendPeriod] = useState<6 | 12 | 36 | 60>(6);
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -99,7 +101,7 @@ export default function DashboardPage() {
     <div className="min-h-screen bg-gradient-to-br from-background via-surface-dark to-background">
       <Header />
       
-      <main className="container mx-auto px-4 py-6">
+      <main className="container mx-auto px-4 py-6 pb-32 lg:pb-6">
         {/* Welcome Section */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -201,13 +203,55 @@ export default function DashboardPage() {
         >
           <div className="flex justify-between items-center mb-4">
             <h2 className="text-lg sm:text-xl font-display font-semibold">Financial Trends</h2>
+            <div className="flex items-center space-x-2">
+              <button
+                onClick={() => setTrendPeriod(6)}
+                className={`px-3 py-1 rounded-lg text-sm font-body transition-all ${
+                  trendPeriod === 6
+                    ? 'bg-primary text-white glow'
+                    : 'backdrop-blur-glass border border-border/50 hover:border-primary/50'
+                }`}
+              >
+                6M
+              </button>
+              <button
+                onClick={() => setTrendPeriod(12)}
+                className={`px-3 py-1 rounded-lg text-sm font-body transition-all ${
+                  trendPeriod === 12
+                    ? 'bg-primary text-white glow'
+                    : 'backdrop-blur-glass border border-border/50 hover:border-primary/50'
+                }`}
+              >
+                1Y
+              </button>
+              <button
+                onClick={() => setTrendPeriod(36)}
+                className={`px-3 py-1 rounded-lg text-sm font-body transition-all ${
+                  trendPeriod === 36
+                    ? 'bg-primary text-white glow'
+                    : 'backdrop-blur-glass border border-border/50 hover:border-primary/50'
+                }`}
+              >
+                3Y
+              </button>
+              <button
+                onClick={() => setTrendPeriod(60)}
+                className={`px-3 py-1 rounded-lg text-sm font-body transition-all ${
+                  trendPeriod === 60
+                    ? 'bg-primary text-white glow'
+                    : 'backdrop-blur-glass border border-border/50 hover:border-primary/50'
+                }`}
+              >
+                5Y
+              </button>
+            </div>
           </div>
           <div className="backdrop-blur-glass border border-border/50 rounded-2xl p-4 sm:p-6">
             <h3 className="text-base sm:text-lg font-display font-semibold mb-4 flex items-center">
               <TrendingUp className="w-4 h-4 sm:w-5 sm:h-5 mr-2 text-primary" />
-              6-Month Trend
+              {trendPeriod === 6 ? '6-Month' : trendPeriod === 12 ? '1-Year' : trendPeriod === 36 ? '3-Year' : '5-Year'} Trend
             </h3>
-            <TrendChart transactions={transactions} months={6} />
+            <TrendChart transactions={transactions} months={trendPeriod} />
           </div>
         </motion.div>
 
@@ -223,6 +267,7 @@ export default function DashboardPage() {
             <div className="flex items-center space-x-2">
               <button
                 onClick={() => setChartType('pie')}
+                title="Show Pie Chart"
                 className={`p-2 rounded-lg transition-all ${
                   chartType === 'pie'
                     ? 'bg-primary text-white glow'
@@ -233,6 +278,7 @@ export default function DashboardPage() {
               </button>
               <button
                 onClick={() => setChartType('bar')}
+                title="Show Bar Chart"
                 className={`p-2 rounded-lg transition-all ${
                   chartType === 'bar'
                     ? 'bg-primary text-white glow'
@@ -294,6 +340,9 @@ export default function DashboardPage() {
           userId={user.uid}
         />
       )}
+
+      {/* Bottom Navigation for Mobile */}
+      <BottomNavigation />
     </div>
   );
 }

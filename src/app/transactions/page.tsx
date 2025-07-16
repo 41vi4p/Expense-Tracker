@@ -12,6 +12,7 @@ import { Transaction } from '@/types';
 import { getUserTransactions } from '@/lib/firestore';
 import toast from 'react-hot-toast';
 import Header from '@/components/Header';
+import BottomNavigation from '@/components/BottomNavigation';
 import TransactionList from '@/components/TransactionList';
 import AddTransactionModal from '@/components/AddTransactionModal';
 
@@ -95,7 +96,7 @@ export default function TransactionsPage() {
     <div className="min-h-screen bg-gradient-to-br from-background via-surface-dark to-background">
       <Header />
       
-      <main className="container mx-auto px-4 py-6">
+      <main className="container mx-auto px-4 py-6 pb-24 lg:pb-6">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -137,6 +138,7 @@ export default function TransactionsPage() {
             <div className="relative">
               <Filter className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-foreground/50" />
               <select
+                aria-label="Filter transactions by type"
                 value={filterType}
                 onChange={(e) => setFilterType(e.target.value as 'all' | 'income' | 'expense')}
                 className="w-full pl-10 pr-4 py-3 bg-surface border border-border/50 rounded-xl font-body focus:border-primary focus:outline-none transition-colors appearance-none"
@@ -192,12 +194,9 @@ export default function TransactionsPage() {
         />
       )}
 
-      {/* Footer */}
-      <footer className="mt-16 py-8 text-center">
-        <p className="text-sm text-foreground/50 font-body">
-          Made by David Porathur
-        </p>
-      </footer>
+
+      {/* Bottom Navigation for Mobile */}
+      <BottomNavigation />
     </div>
   );
 }

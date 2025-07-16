@@ -10,6 +10,7 @@ import { User, Mail, Calendar, Settings, LogOut } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import Header from '@/components/Header';
 import Image from 'next/image';
+import BottomNavigation from '@/components/BottomNavigation';
 
 export default function ProfilePage() {
   const { user, loading, signOut } = useAuth();
@@ -37,7 +38,7 @@ export default function ProfilePage() {
     <div className="min-h-screen bg-gradient-to-br from-background via-surface-dark to-background">
       <Header />
       
-      <main className="container mx-auto px-4 py-6">
+      <main className="container mx-auto px-4 py-6 pb-24 lg:pb-6">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -209,12 +210,8 @@ export default function ProfilePage() {
         </motion.div>
       </main>
 
-      {/* Footer */}
-      <footer className="mt-16 py-8 text-center">
-        <p className="text-sm text-foreground/50 font-body">
-          Made by David Porathur
-        </p>
-      </footer>
+      
+      <BottomNavigation />
     </div>
   );
 }

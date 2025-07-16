@@ -12,6 +12,7 @@ import { Transaction, EXPENSE_CATEGORIES, INCOME_CATEGORIES } from '@/types';
 import { getUserTransactions, getUserStats } from '@/lib/firestore';
 import toast from 'react-hot-toast';
 import Header from '@/components/Header';
+import BottomNavigation from '@/components/BottomNavigation';
 
 interface CategoryStats {
   name: string;
@@ -141,7 +142,7 @@ export default function AnalyticsPage() {
     <div className="min-h-screen bg-gradient-to-br from-background via-surface-dark to-background">
       <Header />
       
-      <main className="container mx-auto px-4 py-6">
+      <main className="container mx-auto px-4 py-6 pb-24 lg:pb-6">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -366,12 +367,8 @@ export default function AnalyticsPage() {
         </motion.div>
       </main>
 
-      {/* Footer */}
-      <footer className="mt-16 py-8 text-center">
-        <p className="text-sm text-foreground/50 font-body">
-          Made by David Porathur
-        </p>
-      </footer>
+      
+      <BottomNavigation />
     </div>
   );
 }

@@ -3,9 +3,10 @@
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Chrome, Zap } from 'lucide-react';
+import { Zap, Info } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { logUserAction, LOG_ACTIONS } from '@/lib/logging';
+import GoogleIcon from '@/components/GoogleIcon';
 
 export default function LoginPage() {
   const { user, loading, signInWithGoogle } = useAuth();
@@ -82,7 +83,7 @@ export default function LoginPage() {
               disabled={loading}
               className="w-full bg-gradient-primary hover:bg-gradient-to-r hover:from-primary hover:to-accent text-white font-semibold py-4 px-6 rounded-xl transition-all duration-300 flex items-center justify-center space-x-3 group glow hover:glow-accent transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              <Chrome className="w-5 h-5 group-hover:rotate-12 transition-transform duration-300" />
+              <GoogleIcon className="w-5 h-5 group-hover:scale-110 transition-transform duration-300" />
               <span className="font-body text-lg">
                 {loading ? 'Signing in...' : 'Continue with Google'}
               </span>
@@ -115,16 +116,22 @@ export default function LoginPage() {
           </motion.div>
         </div>
 
+        {/* About Link */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.8, duration: 0.5 }}
           className="text-center mt-6"
         >
-          <p className="text-xs text-foreground/40 font-body">
-            Made by David Porathur
-          </p>
+          <button
+            onClick={() => router.push('/about')}
+            className="inline-flex items-center space-x-2 text-sm text-foreground/60 hover:text-primary transition-colors"
+          >
+            <Info className="w-4 h-4" />
+            <span>About ExpenseTracker</span>
+          </button>
         </motion.div>
+
       </motion.div>
     </div>
   );

@@ -15,13 +15,14 @@ import { Transaction, Note } from '@/types';
 import { logUserAction, LOG_ACTIONS } from './logging';
 
 
-export const addTransaction = async (transaction: Omit<Transaction, 'id' | 'createdAt'>) => {
+export const addTransaction = async (userId: string, transaction: Omit<Transaction, 'id' | 'createdAt' | 'userId'>) => {
   try {
     if (!isFirebaseConfigured || !db) {
       throw new Error('Firebase is not configured');
     }
     const transactionData = {
       ...transaction,
+      userId,
       date: Timestamp.fromDate(transaction.date),
       createdAt: Timestamp.now(),
     };
@@ -29,7 +30,7 @@ export const addTransaction = async (transaction: Omit<Transaction, 'id' | 'crea
     const docRef = await addDoc(collection(db, 'transactions'), transactionData);
     
     // Log the transaction creation
-    await logUserAction(transaction.userId, 'transaction', LOG_ACTIONS.TRANSACTION.CREATE, {
+    await logUserAction(userId, 'transaction', LOG_ACTIONS.TRANSACTION.CREATE, {
       transactionId: docRef.id,
       type: transaction.type,
       amount: transaction.amount,
@@ -42,7 +43,7 @@ export const addTransaction = async (transaction: Omit<Transaction, 'id' | 'crea
     console.error('Error adding transaction:', error);
     
     // Log the error
-    await logUserAction(transaction.userId, 'system', LOG_ACTIONS.SYSTEM.ERROR, {
+    await logUserAction(userId, 'system', LOG_ACTIONS.SYSTEM.ERROR, {
       action: 'add_transaction',
       error: error instanceof Error ? error.message : 'Unknown error'
     });
@@ -266,6 +267,67 @@ export const deleteNote = async (id: string, userId?: string) => {
     }
   } catch (error) {
     console.error('Error deleting note:', error);
+    throw error;
+  }
+};
+
+// Delete all user data
+export const deleteAllUserData = async (userId: string) => {
+  try {
+    if (!isFirebaseConfigured || !db) {
+      throw new Error('Firebase is not configured');
+    }
+
+    // Delete all transactions
+    const transactionsQuery = query(
+      collection(db, 'transactions'),
+      where('userId', '==', userId)
+    );
+    const transactionsSnapshot = await getDocs(transactionsQuery);
+    
+    const transactionDeletePromises = transactionsSnapshot.docs.map(doc => 
+      deleteDoc(doc.ref)
+    );
+    
+    // Delete all notes
+    const notesQuery = query(
+      collection(db, 'notes'),
+      where('userId', '==', userId)
+    );
+    const notesSnapshot = await getDocs(notesQuery);
+    
+    const notesDeletePromises = notesSnapshot.docs.map(doc => 
+      deleteDoc(doc.ref)
+    );
+    
+    // Delete all activity logs
+    const activityQuery = query(
+      collection(db, 'activity_logs'),
+      where('userId', '==', userId)
+    );
+    const activitySnapshot = await getDocs(activityQuery);
+    
+    const activityDeletePromises = activitySnapshot.docs.map(doc => 
+      deleteDoc(doc.ref)
+    );
+    
+    // Execute all deletions
+    await Promise.all([
+      ...transactionDeletePromises,
+      ...notesDeletePromises,
+      ...activityDeletePromises
+    ]);
+    
+    // Log the deletion
+    await logUserAction(userId, 'settings', LOG_ACTIONS.SETTINGS.DATA_DELETE, {
+      deletedTransactions: transactionsSnapshot.docs.length,
+      deletedNotes: notesSnapshot.docs.length,
+      deletedActivity: activitySnapshot.docs.length,
+      timestamp: new Date().toISOString()
+    });
+    
+  } catch (error) {
+    console.error('Error deleting user data:', error);
     throw error;
   }
 };

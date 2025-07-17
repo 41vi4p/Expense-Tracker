@@ -2,7 +2,7 @@
 
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
-import { Home, CreditCard, BarChart3, FileText, Activity } from 'lucide-react';
+import { Home, CreditCard, BarChart3, FileText, Info } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 const navItems = [
@@ -10,7 +10,7 @@ const navItems = [
   { label: 'Analytics', icon: BarChart3, href: '/analytics' },
   { label: 'Dashboard', icon: Home, href: '/dashboard' },
   { label: 'Notes', icon: FileText, href: '/notes' },
-  { label: 'Activity', icon: Activity, href: '/activity' },
+  { label: 'About', icon: Info, href: '/about' },
 ];
 
 export default function BottomNavigation() {

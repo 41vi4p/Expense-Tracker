@@ -6,7 +6,7 @@ export const dynamic = 'force-dynamic';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState, useCallback } from 'react';
 import { motion } from 'framer-motion';
-import { Plus, TrendingUp, TrendingDown, Wallet, Eye, EyeOff, PieChart, BarChart3 } from 'lucide-react';
+import { Plus, TrendingUp, TrendingDown, Wallet, PieChart, BarChart3 } from 'lucide-react';
 import { Transaction } from '@/types';
 import { getUserTransactions, getUserStats } from '@/lib/firestore';
 import { useAuth } from '@/contexts/AuthContext';
@@ -28,7 +28,6 @@ export default function DashboardPage() {
   const [stats, setStats] = useState({ totalIncome: 0, totalExpenses: 0, balance: 0 });
   const [loading, setLoading] = useState(true);
   const [showAddModal, setShowAddModal] = useState(false);
-  const [balanceVisible, setBalanceVisible] = useState(false);
   const [chartType, setChartType] = useState<'pie' | 'bar'>('pie');
   const [trendPeriod, setTrendPeriod] = useState<6 | 12 | 36 | 60>(6);
 
@@ -126,19 +125,10 @@ export default function DashboardPage() {
           >
             <StatsCard
               title="Total Balance"
-              value={balanceVisible ? stats.balance : '****'}
+              value={stats.balance}
               icon={Wallet}
               color="primary"
               trend={stats.balance >= 0 ? 'up' : 'down'}
-              collapsed={!balanceVisible}
-              action={
-                <button
-                  onClick={() => setBalanceVisible(!balanceVisible)}
-                  className="text-foreground/60 hover:text-foreground transition-colors"
-                >
-                  {balanceVisible ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                </button>
-              }
             />
           </motion.div>
 

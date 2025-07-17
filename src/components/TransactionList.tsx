@@ -5,14 +5,18 @@ import { Edit, Trash2, Calendar } from 'lucide-react';
 import { Transaction, EXPENSE_CATEGORIES, INCOME_CATEGORIES } from '@/types';
 import { deleteTransaction } from '@/lib/firestore';
 import toast from 'react-hot-toast';
+import { useState } from 'react';
+import EditTransactionModal from './EditTransactionModal';
 
 interface TransactionListProps {
   transactions: Transaction[];
   onTransactionUpdate: () => void;
   userId?: string;
+  showActions?: boolean;
 }
 
-export default function TransactionList({ transactions, onTransactionUpdate, userId }: TransactionListProps) {
+export default function TransactionList({ transactions, onTransactionUpdate, userId, showActions = false }: TransactionListProps) {
+  const [editingTransaction, setEditingTransaction] = useState<Transaction | null>(null);
   const allCategories = [...EXPENSE_CATEGORIES, ...INCOME_CATEGORIES];
 
   const getCategoryInfo = (categoryId: string) => {
@@ -52,6 +56,19 @@ export default function TransactionList({ transactions, onTransactionUpdate, use
     }
   };
 
+  const handleEdit = (transaction: Transaction) => {
+    setEditingTransaction(transaction);
+  };
+
+  const handleEditClose = () => {
+    setEditingTransaction(null);
+  };
+
+  const handleTransactionUpdated = () => {
+    setEditingTransaction(null);
+    onTransactionUpdate();
+  };
+
   if (transactions.length === 0) {
     return (
       <div className="backdrop-blur-glass border border-border/50 rounded-2xl p-8 text-center">
@@ -67,8 +84,9 @@ export default function TransactionList({ transactions, onTransactionUpdate, use
   }
 
   return (
-    <div className="space-y-3">
-      {transactions.map((transaction, index) => {
+    <>
+      <div className="space-y-3">
+        {transactions.map((transaction, index) => {
         const category = getCategoryInfo(transaction.category);
         
         return (
@@ -100,8 +118,8 @@ export default function TransactionList({ transactions, onTransactionUpdate, use
                 </div>
               </div>
 
-              <div className="flex items-center space-x-2 sm:space-x-3 flex-shrink-0">
-                <div className="text-right">
+              <div className="flex items-center space-x-3 sm:space-x-4 flex-shrink-0">
+                <div className="text-right min-w-0">
                   <p className={`font-display font-bold text-base sm:text-lg ${
                     transaction.type === 'income' ? 'text-success' : 'text-secondary'
                   }`}>
@@ -112,28 +130,43 @@ export default function TransactionList({ transactions, onTransactionUpdate, use
                   </p>
                 </div>
 
-                <div className="flex items-center space-x-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                  <motion.button
-                    whileHover={{ scale: 1.1 }}
-                    whileTap={{ scale: 0.9 }}
-                    className="p-2 rounded-lg hover:bg-surface transition-colors text-foreground/60 hover:text-primary"
-                  >
-                    <Edit className="w-4 h-4" />
-                  </motion.button>
-                  <motion.button
-                    whileHover={{ scale: 1.1 }}
-                    whileTap={{ scale: 0.9 }}
-                    onClick={() => handleDelete(transaction.id)}
-                    className="p-2 rounded-lg hover:bg-surface transition-colors text-foreground/60 hover:text-error"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </motion.button>
-                </div>
+                {showActions && (
+                  <div className="flex items-center space-x-1 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity duration-300">
+                    <motion.button
+                      whileHover={{ scale: 1.1 }}
+                      whileTap={{ scale: 0.9 }}
+                      onClick={() => handleEdit(transaction)}
+                      className="p-2 rounded-lg hover:bg-primary/20 transition-colors text-primary hover:text-primary border border-primary/30"
+                      title="Edit transaction"
+                    >
+                      <Edit className="w-5 h-5" />
+                    </motion.button>
+                    <motion.button
+                      whileHover={{ scale: 1.1 }}
+                      whileTap={{ scale: 0.9 }}
+                      onClick={() => handleDelete(transaction.id)}
+                      className="p-2 rounded-lg hover:bg-red-500/20 transition-colors text-red-500 hover:text-red-500 border border-red-500/30"
+                      title="Delete transaction"
+                    >
+                      <Trash2 className="w-5 h-5" />
+                    </motion.button>
+                  </div>
+                )}
               </div>
             </div>
           </motion.div>
         );
-      })}
-    </div>
+        })}
+      </div>
+
+      {/* Edit Transaction Modal */}
+      {editingTransaction && (
+        <EditTransactionModal
+          transaction={editingTransaction}
+          onClose={handleEditClose}
+          onTransactionUpdated={handleTransactionUpdated}
+        />
+      )}
+    </>
   );
 }

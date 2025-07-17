@@ -34,7 +34,7 @@ const developers = [
   {
     name: 'David Porathur',
     role: 'Lead Developer & Project Creator',
-    description: 'Full-stack developer passionate about creating intuitive financial tools',
+    description: 'Specialized in IoT and Cybersecurity',
     github: 'https://github.com/41vi4p',
     linkedin: 'https://www.linkedin.com/in/david-porathur-33780228a',
     contributions: ['Core Architecture', 'UI/UX Design', 'Firebase Integration', 'Authentication']
@@ -131,7 +131,7 @@ export default function AboutPage() {
               </div>
             </div>
             <div className="flex items-center justify-center space-x-2 text-sm text-foreground/60">
-              <span>Version 2.0.0</span>
+              <span>Version 2.7.8</span>
               <span>•</span>
               <span>Built with</span>
               <Heart className="w-4 h-4 text-error" />

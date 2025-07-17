@@ -2,17 +2,17 @@
 
 A futuristic expense tracking application built with Next.js, Firebase, and modern UI components. Features a beautiful sci-fi themed interface with dark/light mode support and Google authentication.
 
-## 🆕 Version 2.0.0 - Major Update!
+## 🆕 Version 2.7.8 - Latest Update!
 
 **What's New:**
-- **📱 Mobile Bottom Navigation** - Redesigned mobile experience with curved bottom navigation
-- **⚙️ Settings & Data Management** - Export/import your data, manage account settings
-- **📋 About Page** - Developer credits, tech stack, and project information
-- **📊 Enhanced Dashboard** - Switch between 6M, 1Y, 3Y, and 5Y trend views
-- **🎨 UI/UX Improvements** - Better spacing, animations, and responsive design
-- **🔧 Technical Enhancements** - Bug fixes, performance improvements, and TypeScript updates
+- **✏️ Edit Transaction Feature** - Full implementation of transaction editing with modal interface
+- **📱 Enhanced Mobile Experience** - Always-visible action buttons and improved touch interaction
+- **🎨 UI/UX Improvements** - Fixed balance display, better transaction card alignment
+- **🔄 Navigation Restructuring** - Activity moved to profile, About promoted to main navbar
+- **💰 Currency Consistency** - Fixed rupee symbols in activity logs
+- **🔧 Mobile Optimization** - Better responsiveness and touch-friendly design
 
-[📖 **View Complete Version 2.0.0 Changelog**](./version_log.md) | [⭐ **Star us on GitHub**](https://github.com/41vi4p/Expense-Tracker)
+[📖 **View Complete Version 2.7.8 Changelog**](./version_log.md) | [⭐ **Star us on GitHub**](https://github.com/41vi4p/Expense-Tracker)
 
 ## 🚀 Features
 

@@ -1,6 +1,101 @@
 # ExpenseTracker Version Log
 
-## Version 2.0.0 (Current)
+## Version 2.7.8 (Current)
+*Release Date: July 2025*
+
+### 🚀 Major Features Added
+
+#### Edit Transaction Functionality
+- **Complete Edit System**: Full implementation of transaction editing with modal interface
+- **Cross-Platform Support**: Edit functionality works seamlessly on both mobile and desktop
+- **Pre-filled Forms**: Modal opens with existing transaction data for easy modification
+- **Type Switching**: Users can change transaction type (income/expense) with automatic category updates
+- **Real-time Validation**: Form validation with proper error handling and user feedback
+- **Success Notifications**: Toast notifications for successful transaction updates
+
+#### Enhanced Mobile Experience
+- **Always-Visible Actions**: Edit and delete buttons permanently visible on mobile devices
+- **Touch-Optimized**: Larger touch targets and improved button spacing for mobile interaction
+- **Responsive Design**: Action buttons adapt to different screen sizes and orientations
+- **Improved Accessibility**: Better contrast and visual feedback for action buttons
+
+### 🎨 UI/UX Improvements
+
+#### Dashboard Balance Display
+- **Simplified Interface**: Removed eye button toggle for balance visibility
+- **Always Visible**: Total balance now permanently displayed on dashboard
+- **Clean Design**: Streamlined stats card layout without unnecessary controls
+- **Better Focus**: Users can immediately see their financial status without extra clicks
+
+#### Transaction Card Enhancements
+- **Right Alignment**: Fixed proper right alignment of amounts and transaction types
+- **Visual Hierarchy**: Improved spacing between amount text and action buttons
+- **Consistent Formatting**: Better alignment across all transaction cards
+- **Enhanced Readability**: Optimized text positioning for better user experience
+
+#### Navigation Restructuring
+- **Activity Relocation**: Moved Activity from main navbar to profile dropdown menu
+- **About Promotion**: Moved About from profile dropdown to main navigation bar
+- **Cross-Platform Consistency**: Applied navigation changes to both desktop and mobile interfaces
+- **Improved Organization**: Better logical grouping of navigation items
+
+### 🔧 Technical Improvements
+
+#### Component Architecture
+- **EditTransactionModal**: New reusable modal component for transaction editing
+- **State Management**: Improved transaction editing workflow with proper state handling
+- **Error Handling**: Enhanced error management for transaction operations
+- **Code Reusability**: Shared components between add and edit transaction flows
+
+#### Currency Consistency
+- **Activity Log Updates**: Fixed currency symbols from $ to ₹ in activity descriptions
+- **Unified Format**: Consistent rupee symbol usage throughout the application
+- **Localization**: Proper Indian currency formatting in all transaction displays
+
+#### Mobile Optimization
+- **Action Button Visibility**: Edit/delete buttons always visible on mobile for better UX
+- **Touch Interaction**: Improved touch response and button sizing for mobile devices
+- **Responsive Layout**: Better adaptation to different mobile screen sizes
+- **Performance**: Optimized mobile interactions and animations
+
+### 🐛 Bug Fixes
+
+#### Transaction Management
+- **Edit Functionality**: Implemented previously non-functional edit transaction feature
+- **Button Interactions**: Fixed edit button click handlers and modal state management
+- **Form Validation**: Improved form validation and error handling in edit modal
+- **Data Persistence**: Proper transaction updates with Firebase integration
+
+#### UI/UX Fixes
+- **Alignment Issues**: Fixed right alignment problems in transaction cards
+- **Mobile Responsiveness**: Resolved action button visibility issues on mobile devices
+- **Navigation Consistency**: Standardized navigation behavior across all platforms
+- **Currency Display**: Corrected currency symbol inconsistencies in activity logs
+
+### 📱 Mobile Experience Enhancements
+
+#### Action Button Improvements
+- **Permanent Visibility**: Edit and delete buttons always visible on mobile devices
+- **Optimal Spacing**: Improved spacing between transaction amount and action buttons
+- **Touch-Friendly**: Larger touch targets for better mobile interaction
+- **Visual Feedback**: Enhanced button states and hover effects for mobile
+
+#### Navigation Updates
+- **Bottom Navigation**: Updated mobile navigation to reflect new menu structure
+- **Profile Integration**: Activity moved to profile dropdown for better organization
+- **About Access**: About page now accessible from main navigation on mobile
+
+### 🔐 Data Management
+
+#### Transaction Editing
+- **Secure Updates**: Proper Firebase integration for transaction modifications
+- **Data Validation**: Comprehensive validation of edited transaction data
+- **Error Recovery**: Better error handling and user feedback for failed operations
+- **Audit Trail**: Maintained activity logging for transaction edits
+
+---
+
+## Version 2.0.0 (Previous)
 *Release Date: July 2025*
 
 ### 🚀 Major Features Added

@@ -32,7 +32,7 @@ export default function Header() {
     { label: 'Transactions', icon: CreditCard, href: '/transactions' },
     { label: 'Analytics', icon: BarChart3, href: '/analytics' },
     { label: 'Notes', icon: FileText, href: '/notes' },
-    { label: 'Activity', icon: Activity, href: '/activity' },
+    { label: 'About', icon: Info, href: '/about' },
   ];
 
   const handleNavigation = (href: string) => {
@@ -167,12 +167,12 @@ export default function Header() {
                       <button
                         onClick={() => {
                           setIsProfileOpen(false);
-                          router.push('/about');
+                          router.push('/activity');
                         }}
                         className="w-full flex items-center space-x-3 p-2 rounded-lg hover:bg-surface transition-colors text-left"
                       >
-                        <Info className="w-4 h-4" />
-                        <span className="font-body text-sm">About</span>
+                        <Activity className="w-4 h-4" />
+                        <span className="font-body text-sm">Activity</span>
                       </button>
                       <button
                         onClick={() => {

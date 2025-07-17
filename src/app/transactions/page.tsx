@@ -181,6 +181,7 @@ export default function TransactionsPage() {
             transactions={filteredTransactions} 
             onTransactionUpdate={loadTransactions}
             userId={user.uid}
+            showActions={true}
           />
         </motion.div>
       </main>

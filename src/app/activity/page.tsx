@@ -75,7 +75,7 @@ const getActionDescription = (log: ActivityLog) => {
       if (action === 'session_restored') return 'Session restored';
       break;
     case 'transaction':
-      if (action === 'create_transaction') return `Added ${details.type}: ${details.description} ($${details.amount})`;
+      if (action === 'create_transaction') return `Added ${details.type}: ${details.description} (₹${details.amount})`;
       if (action === 'update_transaction') return `Updated transaction`;
       if (action === 'delete_transaction') return `Deleted transaction`;
       if (action === 'view_transactions') return `Viewed ${details.transactionCount} transactions`;

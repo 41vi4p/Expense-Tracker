@@ -11,7 +11,6 @@ import Script from 'next/script';
 import { 
   Info, 
   Github, 
-  Heart, 
   Code, 
   Zap, 
   Users, 
@@ -131,11 +130,8 @@ export default function AboutPage() {
               </div>
             </div>
             <div className="flex items-center justify-center space-x-2 text-sm text-foreground/60">
-              <span>Version 2.7.8</span>
-              <span>•</span>
-              <span>Built with</span>
-              <Heart className="w-4 h-4 text-error" />
-              <span>by amazing developers</span>
+              <span>Version 2.7.9</span>
+              
             </div>
           </div>
         </motion.div>

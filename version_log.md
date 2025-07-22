@@ -1,6 +1,6 @@
 # ExpenseTracker Version Log
 
-## Version 2.7.8 (Current)
+## Version 2.7.9 (Current)
 *Release Date: July 2025*
 
 ### 🚀 Major Features Added

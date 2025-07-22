@@ -9,6 +9,9 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@capacitor/android": "^7.4.2",
+    "@capacitor/cli": "^7.4.2",
+    "@capacitor/core": "^7.4.2",
     "chart.js": "^4.5.0",
     "date-fns": "^4.1.0",
     "firebase": "^11.10.0",

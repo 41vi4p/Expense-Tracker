@@ -225,7 +225,7 @@
 
 ---
 
-## Version 1.0.0 (Previous)
+## Version 1.0.0 
 *Initial Release*
 
 ### Core Features
@@ -255,7 +255,7 @@
 
 ## Development Team
 
-### Version 2.0.0 Contributors
+### Contributors
 - **David Porathur** - Lead Developer & Project Creator
 - **Vanessa Rodrigues** - Frontend Developer
 - **Community Contributors** - Bug reports and suggestions

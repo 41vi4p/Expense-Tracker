@@ -3,42 +3,30 @@
 // Force dynamic rendering to avoid Firebase initialization during build
 export const dynamic = 'force-dynamic';
 
-import { useRouter } from 'next/navigation';
-import { useEffect } from 'react';
+import React from 'react';
 import { motion } from 'framer-motion';
 import { User, Mail, Calendar, Settings, LogOut } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
-import Header from '@/components/Header';
+import DashboardLayout from '@/components/DashboardLayout';
 import Image from 'next/image';
-import BottomNavigation from '@/components/BottomNavigation';
 
 export default function ProfilePage() {
   const { user, loading, signOut } = useAuth();
-  const router = useRouter();
 
-  useEffect(() => {
-    if (!loading && !user) {
-      router.push('/login');
-    }
-  }, [user, loading, router]);
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin w-8 h-8 border-2 border-primary border-t-transparent rounded-full"></div>
-      </div>
+      <DashboardLayout>
+        <div className="min-h-screen flex items-center justify-center">
+          <div className="animate-spin w-8 h-8 border-2 border-primary border-t-transparent rounded-full"></div>
+        </div>
+      </DashboardLayout>
     );
   }
 
-  if (!user) {
-    return null;
-  }
-
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-surface-dark to-background">
-      <Header />
-      
-      <main className="container mx-auto px-4 py-6 pb-24 lg:pb-6">
+    <DashboardLayout>
+      <div className="container mx-auto px-4 py-6">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -57,10 +45,10 @@ export default function ProfilePage() {
           >
             <div className="flex items-center space-x-6 mb-8">
               <div className="relative">
-                {user.photoURL ? (
+                {user?.photoURL ? (
                   <Image
                     src={user.photoURL}
-                    alt={user.displayName || 'User'}
+                    alt={user?.displayName || 'User'}
                     width={80}
                     height={80}
                     className="rounded-2xl border-2 border-primary/30"
@@ -75,10 +63,10 @@ export default function ProfilePage() {
               
               <div className="flex-1">
                 <h2 className="text-xl font-display font-bold mb-1">
-                  {user.displayName}
+                  {user?.displayName}
                 </h2>
                 <p className="text-foreground/70 font-body mb-2">
-                  {user.email}
+                  {user?.email}
                 </p>
                 <span className="inline-flex items-center px-3 py-1 rounded-full text-xs bg-success/20 text-success font-body">
                   Active User
@@ -93,7 +81,7 @@ export default function ProfilePage() {
                 </div>
                 <div>
                   <p className="text-sm text-foreground/70 font-body">Display Name</p>
-                  <p className="font-body font-medium">{user.displayName}</p>
+                  <p className="font-body font-medium">{user?.displayName}</p>
                 </div>
               </div>
 
@@ -103,7 +91,7 @@ export default function ProfilePage() {
                 </div>
                 <div>
                   <p className="text-sm text-foreground/70 font-body">Email Address</p>
-                  <p className="font-body font-medium">{user.email}</p>
+                  <p className="font-body font-medium">{user?.email}</p>
                 </div>
               </div>
 
@@ -114,7 +102,7 @@ export default function ProfilePage() {
                 <div>
                   <p className="text-sm text-foreground/70 font-body">Member Since</p>
                   <p className="font-body font-medium">
-                    {user.metadata.creationTime ? 
+                    {user?.metadata?.creationTime ? 
                       new Date(user.metadata.creationTime).toLocaleDateString('en-US', { 
                         year: 'numeric', 
                         month: 'long' 
@@ -188,14 +176,16 @@ export default function ProfilePage() {
             transition={{ delay: 0.3 }}
             className="space-y-4"
           >
-            <motion.button
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              onClick={() => router.push('/dashboard')}
-              className="w-full bg-gradient-primary hover:bg-gradient-to-r hover:from-primary hover:to-accent text-white font-semibold py-4 px-6 rounded-xl transition-all duration-300 font-body glow hover:glow-accent"
-            >
-              Back to Dashboard
-            </motion.button>
+            {user && (
+              <motion.button
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                onClick={() => window.location.href = '/dashboard'}
+                className="w-full bg-gradient-primary hover:bg-gradient-to-r hover:from-primary hover:to-accent text-white font-semibold py-4 px-6 rounded-xl transition-all duration-300 font-body glow hover:glow-accent"
+              >
+                Back to Dashboard
+              </motion.button>
+            )}
 
             <motion.button
               whileHover={{ scale: 1.02 }}
@@ -208,10 +198,7 @@ export default function ProfilePage() {
             </motion.button>
           </motion.div>
         </motion.div>
-      </main>
-
-      
-      <BottomNavigation />
-    </div>
+      </div>
+    </DashboardLayout>
   );
 }

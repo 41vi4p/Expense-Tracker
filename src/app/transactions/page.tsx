@@ -4,21 +4,18 @@
 export const dynamic = 'force-dynamic';
 
 import { useAuth } from '@/contexts/AuthContext';
-import { useRouter } from 'next/navigation';
 import { useEffect, useState, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { Filter, Search, Plus } from 'lucide-react';
 import { Transaction } from '@/types';
 import { getUserTransactions } from '@/lib/firestore';
 import toast from 'react-hot-toast';
-import Header from '@/components/Header';
-import BottomNavigation from '@/components/BottomNavigation';
+import DashboardLayout from '@/components/DashboardLayout';
 import TransactionList from '@/components/TransactionList';
 import AddTransactionModal from '@/components/AddTransactionModal';
 
 export default function TransactionsPage() {
-  const { user, loading: authLoading } = useAuth();
-  const router = useRouter();
+  const { user } = useAuth();
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [filteredTransactions, setFilteredTransactions] = useState<Transaction[]>([]);
   const [loading, setLoading] = useState(true);
@@ -26,11 +23,6 @@ export default function TransactionsPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterType, setFilterType] = useState<'all' | 'income' | 'expense'>('all');
 
-  useEffect(() => {
-    if (!authLoading && !user) {
-      router.push('/login');
-    }
-  }, [user, authLoading, router]);
 
   useEffect(() => {
     if (user) {
@@ -43,7 +35,7 @@ export default function TransactionsPage() {
   }, [transactions, searchTerm, filterType]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const loadTransactions = useCallback(async () => {
-    if (!user) return;
+    if (!user?.uid) return;
     
     try {
       setLoading(true);
@@ -80,23 +72,19 @@ export default function TransactionsPage() {
     toast.success('Transaction added successfully!');
   };
 
-  if (authLoading || loading) {
+  if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin w-8 h-8 border-2 border-primary border-t-transparent rounded-full"></div>
-      </div>
+      <DashboardLayout>
+        <div className="min-h-screen flex items-center justify-center">
+          <div className="animate-spin w-8 h-8 border-2 border-primary border-t-transparent rounded-full"></div>
+        </div>
+      </DashboardLayout>
     );
   }
 
-  if (!user) {
-    return null;
-  }
-
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-surface-dark to-background">
-      <Header />
-      
-      <main className="container mx-auto px-4 py-6 pb-24 lg:pb-6">
+    <DashboardLayout>
+      <div className="container mx-auto px-4 py-6">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -180,24 +168,20 @@ export default function TransactionsPage() {
           <TransactionList 
             transactions={filteredTransactions} 
             onTransactionUpdate={loadTransactions}
-            userId={user.uid}
+            userId={user?.uid || ''}
             showActions={true}
           />
         </motion.div>
-      </main>
+      </div>
 
       {/* Add Transaction Modal */}
-      {showAddModal && (
+      {showAddModal && user && (
         <AddTransactionModal
           onClose={() => setShowAddModal(false)}
           onTransactionAdded={handleTransactionAdded}
           userId={user.uid}
         />
       )}
-
-
-      {/* Bottom Navigation for Mobile */}
-      <BottomNavigation />
-    </div>
+    </DashboardLayout>
   );
 }

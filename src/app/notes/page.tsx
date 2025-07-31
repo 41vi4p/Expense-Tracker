@@ -20,12 +20,10 @@ import {
   Bookmark
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
-import { useRouter } from 'next/navigation';
-import Header from '@/components/Header';
+import DashboardLayout from '@/components/DashboardLayout';
 import { Note } from '@/types';
 import { getUserNotes, addNote, updateNote, deleteNote } from '@/lib/firestore';
 import toast from 'react-hot-toast';
-import BottomNavigation from '@/components/BottomNavigation';
 
 const NOTE_CATEGORIES = {
   'financial-goal': { name: 'Financial Goal', icon: Target, color: '#3B82F6' },
@@ -36,8 +34,7 @@ const NOTE_CATEGORIES = {
 };
 
 export default function NotesPage() {
-  const { user, loading: authLoading } = useAuth();
-  const router = useRouter();
+  const { user } = useAuth();
   const [notes, setNotes] = useState<Note[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
@@ -52,13 +49,10 @@ export default function NotesPage() {
   const [tags, setTags] = useState<string>('');
 
   useEffect(() => {
-    if (authLoading) return;
-    if (!user) {
-      router.push('/login');
-      return;
+    if (user) {
+      loadNotes();
     }
-    loadNotes();
-  }, [user, authLoading, router]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [user]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const loadNotes = useCallback(async () => {
     try {
@@ -147,23 +141,19 @@ export default function NotesPage() {
     return matchesSearch && matchesCategory;
   });
 
-  if (authLoading || loading) {
+  if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin w-8 h-8 border-2 border-primary border-t-transparent rounded-full"></div>
-      </div>
+      <DashboardLayout>
+        <div className="min-h-screen flex items-center justify-center">
+          <div className="animate-spin w-8 h-8 border-2 border-primary border-t-transparent rounded-full"></div>
+        </div>
+      </DashboardLayout>
     );
   }
 
-  if (!user) {
-    return null;
-  }
-
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-surface-dark to-background">
-      <Header />
-      
-      <main className="container mx-auto px-4 py-4 sm:py-6 pb-24 lg:pb-6">
+    <DashboardLayout>
+      <div className="container mx-auto px-4 py-4 sm:py-6">
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -352,11 +342,11 @@ export default function NotesPage() {
             </p>
           </motion.div>
         )}
-      </main>
+      </div>
 
       {/* Add/Edit Note Modal */}
       <AnimatePresence>
-        {isModalOpen && (
+        {user && isModalOpen && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -479,8 +469,6 @@ export default function NotesPage() {
           </motion.div>
         )}
       </AnimatePresence>
-      
-      <BottomNavigation />
-    </div>
+    </DashboardLayout>
   );
 }

@@ -4,15 +4,13 @@
 export const dynamic = 'force-dynamic';
 
 import { useAuth } from '@/contexts/AuthContext';
-import { useRouter } from 'next/navigation';
 import { useEffect, useState, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { BarChart3, PieChart, TrendingUp, Calendar } from 'lucide-react';
 import { Transaction, EXPENSE_CATEGORIES, INCOME_CATEGORIES } from '@/types';
 import { getUserTransactions, getUserStats } from '@/lib/firestore';
 import toast from 'react-hot-toast';
-import Header from '@/components/Header';
-import BottomNavigation from '@/components/BottomNavigation';
+import DashboardLayout from '@/components/DashboardLayout';
 
 interface CategoryStats {
   name: string;
@@ -23,19 +21,13 @@ interface CategoryStats {
 }
 
 export default function AnalyticsPage() {
-  const { user, loading: authLoading } = useAuth();
-  const router = useRouter();
+  const { user } = useAuth();
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [stats, setStats] = useState({ totalIncome: 0, totalExpenses: 0, balance: 0 });
   const [loading, setLoading] = useState(true);
   const [expensesByCategory, setExpensesByCategory] = useState<CategoryStats[]>([]);
   const [incomeByCategory, setIncomeByCategory] = useState<CategoryStats[]>([]);
 
-  useEffect(() => {
-    if (!authLoading && !user) {
-      router.push('/login');
-    }
-  }, [user, authLoading, router]);
 
   useEffect(() => {
     if (user) {
@@ -126,23 +118,19 @@ export default function AnalyticsPage() {
     }).format(amount);
   };
 
-  if (authLoading || loading) {
+  if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin w-8 h-8 border-2 border-primary border-t-transparent rounded-full"></div>
-      </div>
+      <DashboardLayout>
+        <div className="min-h-screen flex items-center justify-center">
+          <div className="animate-spin w-8 h-8 border-2 border-primary border-t-transparent rounded-full"></div>
+        </div>
+      </DashboardLayout>
     );
   }
 
-  if (!user) {
-    return null;
-  }
-
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-surface-dark to-background">
-      <Header />
-      
-      <main className="container mx-auto px-4 py-6 pb-24 lg:pb-6">
+    <DashboardLayout>
+      <div className="container mx-auto px-4 py-6">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -365,10 +353,7 @@ export default function AnalyticsPage() {
             </div>
           </div>
         </motion.div>
-      </main>
-
-      
-      <BottomNavigation />
-    </div>
+      </div>
+    </DashboardLayout>
   );
 }

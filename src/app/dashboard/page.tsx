@@ -3,7 +3,6 @@
 // Force dynamic rendering to avoid Firebase initialization during build
 export const dynamic = 'force-dynamic';
 
-import { useRouter } from 'next/navigation';
 import { useEffect, useState, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { Plus, TrendingUp, TrendingDown, Wallet, PieChart, BarChart3 } from 'lucide-react';
@@ -12,8 +11,7 @@ import { getUserTransactions, getUserStats } from '@/lib/firestore';
 import { useAuth } from '@/contexts/AuthContext';
 import { logUserAction, LOG_ACTIONS } from '@/lib/logging';
 import toast from 'react-hot-toast';
-import Header from '@/components/Header';
-import BottomNavigation from '@/components/BottomNavigation';
+import DashboardLayout from '@/components/DashboardLayout';
 import StatsCard from '@/components/StatsCard';
 import TransactionList from '@/components/TransactionList';
 import AddTransactionModal from '@/components/AddTransactionModal';
@@ -22,8 +20,7 @@ import IncomeChart from '@/components/charts/IncomeChart';
 import TrendChart from '@/components/charts/TrendChart';
 
 export default function DashboardPage() {
-  const { user, loading: authLoading } = useAuth();
-  const router = useRouter();
+  const { user } = useAuth();
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [stats, setStats] = useState({ totalIncome: 0, totalExpenses: 0, balance: 0 });
   const [loading, setLoading] = useState(true);
@@ -31,14 +28,9 @@ export default function DashboardPage() {
   const [chartType, setChartType] = useState<'pie' | 'bar'>('pie');
   const [trendPeriod, setTrendPeriod] = useState<6 | 12 | 36 | 60>(6);
 
-  useEffect(() => {
-    if (!authLoading && !user) {
-      router.push('/login');
-    }
-  }, [user, authLoading, router]);
 
   useEffect(() => {
-    if (user) {
+    if (user?.uid) {
       loadData();
       // Log page view
       logUserAction(user.uid, 'navigation', LOG_ACTIONS.NAVIGATION.PAGE_VIEW, {
@@ -49,7 +41,7 @@ export default function DashboardPage() {
   }, [user]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const loadData = useCallback(async () => {
-    if (!user) return;
+    if (!user?.uid) return;
     
     try {
       setLoading(true);
@@ -76,7 +68,7 @@ export default function DashboardPage() {
 
   const handleModalOpen = () => {
     setShowAddModal(true);
-    if (user) {
+    if (user?.uid) {
       logUserAction(user.uid, 'navigation', LOG_ACTIONS.NAVIGATION.MODAL_OPEN, {
         modal: 'add_transaction',
         timestamp: new Date().toISOString()
@@ -84,23 +76,19 @@ export default function DashboardPage() {
     }
   };
 
-  if (authLoading || loading) {
+  if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin w-8 h-8 border-2 border-primary border-t-transparent rounded-full"></div>
-      </div>
+      <DashboardLayout>
+        <div className="min-h-screen flex items-center justify-center">
+          <div className="animate-spin w-8 h-8 border-2 border-primary border-t-transparent rounded-full"></div>
+        </div>
+      </DashboardLayout>
     );
   }
 
-  if (!user) {
-    return null;
-  }
-
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-surface-dark to-background">
-      <Header />
-      
-      <main className="container mx-auto px-4 py-6 pb-32 lg:pb-6">
+    <DashboardLayout>
+      <div className="container mx-auto px-4 py-6">
         {/* Welcome Section */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -108,7 +96,7 @@ export default function DashboardPage() {
           className="mb-8"
         >
           <h1 className="text-2xl font-display font-bold text-gradient mb-2">
-            Welcome back, {user.displayName?.split(' ')[0]}!
+            Welcome back, {user?.displayName?.split(' ')[0]}!
           </h1>
           <p className="text-foreground/70 font-body">
             Here&apos;s your financial overview
@@ -175,7 +163,7 @@ export default function DashboardPage() {
               <span className="font-body">Add Transaction</span>
             </button>
             <button
-              onClick={() => router.push('/analytics')}
+              onClick={() => window.location.href = '/analytics'}
               className="backdrop-blur-glass border border-border/50 hover:border-primary/50 text-foreground font-semibold py-4 px-6 rounded-xl transition-all duration-300 flex items-center justify-center space-x-3 hover:glow transform hover:scale-105"
             >
               <TrendingUp className="w-5 h-5" />
@@ -308,7 +296,7 @@ export default function DashboardPage() {
           <div className="flex justify-between items-center mb-4">
             <h2 className="text-xl font-display font-semibold">Recent Transactions</h2>
             <button
-              onClick={() => router.push('/transactions')}
+              onClick={() => window.location.href = '/transactions'}
               className="text-primary hover:text-accent font-body text-sm transition-colors"
             >
               View All
@@ -317,22 +305,19 @@ export default function DashboardPage() {
           <TransactionList 
             transactions={transactions.slice(0, 5)} 
             onTransactionUpdate={loadData}
-            userId={user.uid}
+            userId={user?.uid || ''}
           />
         </motion.div>
-      </main>
+      </div>
 
       {/* Add Transaction Modal */}
-      {showAddModal && (
+      {showAddModal && user && (
         <AddTransactionModal
           onClose={() => setShowAddModal(false)}
           onTransactionAdded={handleTransactionAdded}
-          userId={user.uid}
+          userId={user?.uid || ''}
         />
       )}
-
-      {/* Bottom Navigation for Mobile */}
-      <BottomNavigation />
-    </div>
+    </DashboardLayout>
   );
 }

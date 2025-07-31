@@ -4,7 +4,6 @@
 export const dynamic = 'force-dynamic';
 
 import { useAuth } from '@/contexts/AuthContext';
-import { useRouter } from 'next/navigation';
 import { useEffect, useState, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { 
@@ -21,25 +20,18 @@ import {
 import { getUserTransactions, deleteAllUserData, addTransaction } from '@/lib/firestore';
 import { logUserAction, LOG_ACTIONS } from '@/lib/logging';
 import toast from 'react-hot-toast';
-import Header from '@/components/Header';
-import BottomNavigation from '@/components/BottomNavigation';
+import DashboardLayout from '@/components/DashboardLayout';
 
 export default function SettingsPage() {
-  const { user, loading: authLoading } = useAuth();
-  const router = useRouter();
+  const { user } = useAuth();
   const [loading, setLoading] = useState(false);
   const [exportLoading, setExportLoading] = useState(false);
   const [importLoading, setImportLoading] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
-  useEffect(() => {
-    if (!authLoading && !user) {
-      router.push('/login');
-    }
-  }, [user, authLoading, router]);
 
   useEffect(() => {
-    if (user) {
+    if (user?.uid) {
       // Log page view
       logUserAction(user.uid, 'navigation', LOG_ACTIONS.NAVIGATION.PAGE_VIEW, {
         page: 'settings',
@@ -49,7 +41,7 @@ export default function SettingsPage() {
   }, [user]);
 
   const exportData = useCallback(async () => {
-    if (!user) return;
+    if (!user?.uid) return;
     
     try {
       setExportLoading(true);
@@ -58,9 +50,9 @@ export default function SettingsPage() {
       const exportData = {
         user: {
           id: user.uid,
-          name: user.displayName,
-          email: user.email,
-          photoURL: user.photoURL
+          name: user?.displayName,
+          email: user?.email,
+          photoURL: user?.photoURL
         },
         transactions: transactions,
         exportDate: new Date().toISOString(),
@@ -92,7 +84,7 @@ export default function SettingsPage() {
   }, [user]);
 
   const importData = useCallback(async (file: File) => {
-    if (!user) return;
+    if (!user?.uid) return;
     
     try {
       setImportLoading(true);
@@ -142,7 +134,7 @@ export default function SettingsPage() {
   };
 
   const deleteAllData = useCallback(async () => {
-    if (!user) return;
+    if (!user?.uid) return;
     
     try {
       setLoading(true);
@@ -162,23 +154,19 @@ export default function SettingsPage() {
     }
   }, [user]);
 
-  if (authLoading || loading) {
+  if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin w-8 h-8 border-2 border-primary border-t-transparent rounded-full"></div>
-      </div>
+      <DashboardLayout>
+        <div className="min-h-screen flex items-center justify-center">
+          <div className="animate-spin w-8 h-8 border-2 border-primary border-t-transparent rounded-full"></div>
+        </div>
+      </DashboardLayout>
     );
   }
 
-  if (!user) {
-    return null;
-  }
-
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-surface-dark to-background">
-      <Header />
-      
-      <main className="container mx-auto px-4 py-6 pb-24 lg:pb-6">
+    <DashboardLayout>
+      <div className="container mx-auto px-4 py-6">
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -269,12 +257,12 @@ export default function SettingsPage() {
                 <div className="flex items-center space-x-3 mb-3">
                   <div className="w-10 h-10 bg-primary/20 rounded-full flex items-center justify-center">
                     <span className="text-primary font-semibold">
-                      {user.displayName?.charAt(0)?.toUpperCase() || 'U'}
+                      {user?.displayName?.charAt(0)?.toUpperCase() || 'U'}
                     </span>
                   </div>
                   <div>
-                    <h3 className="font-display font-medium">{user.displayName}</h3>
-                    <p className="text-sm text-foreground/70">{user.email}</p>
+                    <h3 className="font-display font-medium">{user?.displayName}</h3>
+                    <p className="text-sm text-foreground/70">{user?.email}</p>
                   </div>
                 </div>
                 <div className="flex items-center space-x-2 text-sm text-success">
@@ -321,7 +309,7 @@ export default function SettingsPage() {
         </motion.div>
 
         {/* Delete Confirmation Modal */}
-        {showDeleteConfirm && (
+        {user && showDeleteConfirm && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -358,10 +346,7 @@ export default function SettingsPage() {
             </motion.div>
           </motion.div>
         )}
-      </main>
-
-      {/* Bottom Navigation for Mobile */}
-      <BottomNavigation />
-    </div>
+      </div>
+    </DashboardLayout>
   );
 }

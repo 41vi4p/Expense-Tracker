@@ -4,7 +4,6 @@ import { useEffect, useState, useCallback } from 'react';
 
 // Force dynamic rendering to avoid Firebase initialization during build
 export const dynamic = 'force-dynamic';
-import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { 
   Activity, 
@@ -22,10 +21,9 @@ import {
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { getUserActivityLogs, ActivityLog, logUserAction, LOG_ACTIONS } from '@/lib/logging';
-import Header from '@/components/Header';
+import DashboardLayout from '@/components/DashboardLayout';
 import { format } from 'date-fns';
 import toast from 'react-hot-toast';
-import BottomNavigation from '@/components/BottomNavigation';
 
 const getActionIcon = (category: string, action: string) => {
   switch (category) {
@@ -99,17 +97,11 @@ const getActionDescription = (log: ActivityLog) => {
 };
 
 export default function ActivityPage() {
-  const { user, loading } = useAuth();
-  const router = useRouter();
+  const { user } = useAuth();
   const [logs, setLogs] = useState<ActivityLog[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [filter, setFilter] = useState<string>('all');
 
-  useEffect(() => {
-    if (!loading && !user) {
-      router.push('/login');
-    }
-  }, [user, loading, router]);
 
   const loadActivityLogs = useCallback(async () => {
     if (!user) return;
@@ -150,23 +142,19 @@ export default function ActivityPage() {
     { value: 'system', label: 'System', count: logs.filter(l => l.category === 'system').length },
   ];
 
-  if (loading || isLoading) {
+  if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin w-8 h-8 border-2 border-primary border-t-transparent rounded-full"></div>
-      </div>
+      <DashboardLayout>
+        <div className="min-h-screen flex items-center justify-center">
+          <div className="animate-spin w-8 h-8 border-2 border-primary border-t-transparent rounded-full"></div>
+        </div>
+      </DashboardLayout>
     );
   }
 
-  if (!user) {
-    return null;
-  }
-
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-surface-dark to-background">
-      <Header />
-      
-      <main className="container mx-auto px-4 py-6 pb-24 lg:pb-6">
+    <DashboardLayout>
+      <div className="container mx-auto px-4 py-6">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -297,10 +285,7 @@ export default function ActivityPage() {
             </button>
           </motion.div>
         )}
-      </main>
-
-      
-      <BottomNavigation />
-    </div>
+      </div>
+    </DashboardLayout>
   );
 }

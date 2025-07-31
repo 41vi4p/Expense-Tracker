@@ -176,6 +176,8 @@ export default function AboutPage() {
                           target="_blank"
                           rel="noopener noreferrer"
                           className="text-foreground/60 hover:text-primary transition-colors"
+                          title={`GitHub profile of ${dev.name}`}
+                          aria-label={`GitHub profile of ${dev.name}`}
                         >
                           <Github className="w-5 h-5" />
                         </a>
@@ -185,6 +187,8 @@ export default function AboutPage() {
                             target="_blank"
                             rel="noopener noreferrer"
                             className="text-foreground/60 hover:text-blue-400 transition-colors"
+                            title={`LinkedIn profile of ${dev.name}`}
+                            aria-label={`LinkedIn profile of ${dev.name}`}
                           >
                             <Linkedin className="w-5 h-5" />
                           </a>
@@ -428,6 +432,7 @@ export default function AboutPage() {
                         target="_blank"
                         rel="noopener noreferrer"
                         className="text-foreground/60 hover:text-primary transition-colors"
+                        title={`GitHub profile of ${dev.name}`}
                       >
                         <Github className="w-5 h-5" />
                       </a>
@@ -437,6 +442,7 @@ export default function AboutPage() {
                           target="_blank"
                           rel="noopener noreferrer"
                           className="text-foreground/60 hover:text-blue-400 transition-colors"
+                          title={`LinkedIn profile of ${dev.name}`}
                         >
                           <Linkedin className="w-5 h-5" />
                         </a>

@@ -237,8 +237,7 @@ export default function AnalyticsPage() {
                   >
                     <div className="flex items-center space-x-3">
                       <div 
-                        className="w-10 h-10 rounded-lg flex items-center justify-center text-lg"
-                        style={{ backgroundColor: `${category.color}20` }}
+                        className={`w-10 h-10 rounded-lg flex items-center justify-center text-lg category-bg-${category.name.replace(/\s+/g, '-').toLowerCase()}`}
                       >
                         {category.icon}
                       </div>
@@ -286,8 +285,7 @@ export default function AnalyticsPage() {
                   >
                     <div className="flex items-center space-x-3">
                       <div 
-                        className="w-10 h-10 rounded-lg flex items-center justify-center text-lg"
-                        style={{ backgroundColor: `${category.color}20` }}
+                        className={`w-10 h-10 rounded-lg flex items-center justify-center text-lg category-bg-${category.name.replace(/\s+/g, '-').toLowerCase()}`}
                       >
                         {category.icon}
                       </div>

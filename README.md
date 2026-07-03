@@ -1,6 +1,17 @@
 # ExpenseTracker
 
+<p>
+  <img alt="Version" src="https://img.shields.io/badge/version-2.7.9-06b6d4?style=for-the-badge&labelColor=0a0a0a" />
+  <img alt="License: MIT" src="https://img.shields.io/badge/license-MIT-06b6d4?style=for-the-badge&labelColor=0a0a0a" />
+  <img alt="Next.js" src="https://img.shields.io/badge/Next.js-16-000000?style=for-the-badge&logo=next.js&logoColor=white&labelColor=0a0a0a" />
+  <img alt="TypeScript" src="https://img.shields.io/badge/TypeScript-5-3178C6?style=for-the-badge&logo=typescript&logoColor=white&labelColor=0a0a0a" />
+  <img alt="Firebase" src="https://img.shields.io/badge/Firebase-11-FFCA28?style=for-the-badge&logo=firebase&logoColor=black&labelColor=0a0a0a" />
+  <img alt="Deployed on Vercel" src="https://img.shields.io/badge/Deployed_on-Vercel-black?style=for-the-badge&logo=vercel&logoColor=white&labelColor=0a0a0a" />
+</p>
+
 A futuristic expense tracking application built with Next.js, Firebase, and modern UI components. Features a beautiful sci-fi themed interface with dark/light mode support and Google authentication.
+
+### 🔗 [**Live Demo → expense-tracker-41vi4p.vercel.app**](https://expense-tracker-41vi4p.vercel.app/)
 
 ## 🆕 Version 2.7.8 - Latest Update!
 
@@ -12,7 +23,7 @@ A futuristic expense tracking application built with Next.js, Firebase, and mode
 - **💰 Currency Consistency** - Fixed rupee symbols in activity logs
 - **🔧 Mobile Optimization** - Better responsiveness and touch-friendly design
 
-[📖 **View Complete Version 2.7.8 Changelog**](./version_log.md) | [⭐ **Star us on GitHub**](https://github.com/41vi4p/Expense-Tracker)
+[📖 **View Complete Version 2.7.8 Changelog**](./version_log.md) | [⭐ **Star us on GitHub**](https://github.com/41vi4p/Expense-Tracker) | [🌐 **Try the Live Demo**](https://expense-tracker-41vi4p.vercel.app/)
 
 ## 🚀 Features
 
@@ -24,16 +35,28 @@ A futuristic expense tracking application built with Next.js, Firebase, and mode
 - **🌙 Dark/Light Theme** - Modern sci-fi themed UI with theme switching
 - **📱 Mobile-First Design** - Optimized for mobile devices
 - **🔥 Firebase Integration** - Real-time database with Firestore
-- **⚡ Fast Performance** - Built with Next.js 15 and TypeScript
+- **⚡ Fast Performance** - Built with Next.js 16 and TypeScript
 
 ## 🛠️ Tech Stack
 
-- **Frontend**: Next.js 15, TypeScript, Tailwind CSS 4
+<p>
+  <img alt="Next.js" src="https://img.shields.io/badge/Next.js_16-000000?style=flat-square&logo=next.js&logoColor=white" />
+  <img alt="React" src="https://img.shields.io/badge/React_19-20232A?style=flat-square&logo=react&logoColor=61DAFB" />
+  <img alt="TypeScript" src="https://img.shields.io/badge/TypeScript-3178C6?style=flat-square&logo=typescript&logoColor=white" />
+  <img alt="Tailwind CSS" src="https://img.shields.io/badge/Tailwind_CSS_4-06B6D4?style=flat-square&logo=tailwindcss&logoColor=white" />
+  <img alt="Firebase" src="https://img.shields.io/badge/Firebase-FFCA28?style=flat-square&logo=firebase&logoColor=black" />
+  <img alt="Chart.js" src="https://img.shields.io/badge/Chart.js-FF6384?style=flat-square&logo=chartdotjs&logoColor=white" />
+  <img alt="Framer Motion" src="https://img.shields.io/badge/Framer_Motion-0055FF?style=flat-square&logo=framer&logoColor=white" />
+  <img alt="Vercel" src="https://img.shields.io/badge/Vercel-black?style=flat-square&logo=vercel&logoColor=white" />
+</p>
+
+- **Frontend**: Next.js 16, TypeScript, Tailwind CSS 4
 - **Backend**: Firebase (Firestore, Authentication)
 - **Authentication**: Firebase Auth with Google Provider
 - **Charts**: Chart.js, React Chart.js 2, Recharts
 - **UI Components**: Framer Motion, React Hot Toast
 - **Icons**: Lucide React
+- **Deployment**: Vercel
 
 ## 📦 Installation
 
@@ -112,5 +135,15 @@ npm run lint
 
 Contributions are welcome! Please feel free to submit a Pull Request.
 
+## 📄 License
+
+Licensed under the [MIT License](./LICENSE).
+
 ---
+
+<p align="center">
+  <a href="https://expense-tracker-41vi4p.vercel.app/"><strong>🌐 Live Demo</strong></a> ·
+  <a href="https://github.com/41vi4p/Expense-Tracker/issues"><strong>🐛 Report Bug</strong></a> ·
+  <a href="https://github.com/41vi4p/Expense-Tracker/issues"><strong>✨ Request Feature</strong></a>
+</p>
 

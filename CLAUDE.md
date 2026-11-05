@@ -24,6 +24,10 @@ For **every** change you make (feature, fix, refactor, dependency bump, docs tha
 The release workflow publishes a release only when `package.json` has a version with no matching `vX.Y.Z` tag,
 and it fails if `docs/CHANGELOG.md` has no section for that version. Forgetting step 1 means no APK is released.
 
+## Requirements
+
+Node.js >= 24.12 (required by Firebase 12; enforced via `engines`, used by Vercel and CI).
+
 ## Commands
 
 ```bash

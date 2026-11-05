@@ -7,6 +7,11 @@ The text of the matching section is used verbatim as the GitHub release notes.
 
 Older history (pre-3.0) lives in [VERSION_HISTORY_LEGACY.md](./VERSION_HISTORY_LEGACY.md).
 
+## [3.0.4] - 2026-11-05
+
+### Changed
+- The bottom navigation bar is now nearly opaque (96%) in both themes, so page content no longer shows through it.
+
 ## [3.0.3] - 2026-11-05
 
 ### Fixed

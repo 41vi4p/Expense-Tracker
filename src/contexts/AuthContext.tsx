@@ -3,13 +3,17 @@
 import { createContext, useContext, useEffect, useState } from 'react';
 import { 
   User, 
-  signInWithPopup, 
+  signInWithPopup,
+  signInWithCredential,
+  GoogleAuthProvider,
   signOut as firebaseSignOut, 
   onAuthStateChanged,
   UserCredential
 } from 'firebase/auth';
 import { auth, googleProvider, isFirebaseConfigured } from '@/lib/firebase';
 import { logUserAction } from '@/lib/logging';
+import { Capacitor } from '@capacitor/core';
+import { FirebaseAuthentication } from '@capacitor-firebase/authentication';
 import toast from 'react-hot-toast';
 
 interface AuthContextType {
@@ -45,8 +49,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       
       if (user) {
         logUserAction(user.uid, 'auth', 'session_restored', {
-          email: user.email,
-          name: user.displayName,
           lastSignIn: user.metadata.lastSignInTime
         });
       }
@@ -56,47 +58,40 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   }, []);
 
   const signInWithGoogle = async (): Promise<UserCredential | null> => {
+    if (!isFirebaseConfigured || !auth || !googleProvider) {
+      toast.error('Authentication is not configured');
+      return null;
+    }
+
     try {
-      //changes
-      // if (!isFirebaseConfigured || !auth || !googleProvider) {
-      //   toast.error('Authentication is not configured');
-      //   return null;
-      // }
-      if(!isFirebaseConfigured){
-        toast.error('Authentication is not configured');
-        console.log(isFirebaseConfigured);
-        return null;
-      }
-      if (!auth ) {
-        console.error('Firebase auth  is not initialized');
-        return null;
-      }
-      if (!googleProvider) {
-        console.error('Google provider is not initialized');
-        return null;
-      }
-      
       setLoading(true);
-      const result = await signInWithPopup(auth, googleProvider);
-      
+      let result: UserCredential;
+
+      if (Capacitor.isNativePlatform()) {
+        // Popups do not work inside the Android WebView, so use the native Google dialog
+        // and exchange its ID token for a Firebase session.
+        const native = await FirebaseAuthentication.signInWithGoogle({ skipNativeAuth: true });
+        const idToken = native.credential?.idToken;
+        if (!idToken) throw new Error('No ID token returned by Google');
+        result = await signInWithCredential(auth, GoogleAuthProvider.credential(idToken));
+      } else {
+        result = await signInWithPopup(auth, googleProvider);
+      }
+
       await logUserAction(result.user.uid, 'auth', 'login', {
         method: 'google',
-        email: result.user.email,
-        name: result.user.displayName,
         isNewUser: result.user.metadata.creationTime === result.user.metadata.lastSignInTime
       });
-      
+
       toast.success(`Welcome ${result.user.displayName?.split(' ')[0] || 'back'}!`);
       return result;
     } catch (error: any) {
-      console.error('Error signing in:', error);
-      
-      await logUserAction('anonymous', 'auth', 'login_failed', {
-        error: error.message,
-        method: 'google'
-      });
-      
-      toast.error('Failed to sign in. Please try again.');
+      const code = error?.code as string | undefined;
+      // The user closing the dialog is not an error worth reporting.
+      if (code !== 'auth/popup-closed-by-user' && code !== 'auth/cancelled-popup-request') {
+        console.error('Error signing in:', error);
+        toast.error('Failed to sign in. Please try again.');
+      }
       return null;
     } finally {
       setLoading(false);
@@ -110,12 +105,12 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       }
       
       if (user) {
-        await logUserAction(user.uid, 'auth', 'logout', {
-          email: user.email,
-          sessionDuration: Date.now() - new Date(user.metadata.lastSignInTime!).getTime()
-        });
+        await logUserAction(user.uid, 'auth', 'logout', {});
       }
-      
+
+      if (Capacitor.isNativePlatform()) {
+        await FirebaseAuthentication.signOut();
+      }
       await firebaseSignOut(auth);
       toast.success('Signed out successfully');
     } catch (error: any) {

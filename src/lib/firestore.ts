@@ -9,10 +9,24 @@ import {
   where,
   orderBy,
   Timestamp,
+  writeBatch,
+  DocumentReference,
 } from 'firebase/firestore';
 import { db, isFirebaseConfigured } from './firebase';
 import { Transaction, Note } from '@/types';
 import { logUserAction, LOG_ACTIONS } from './logging';
+import { validateTransaction, sanitizeText } from './validation';
+
+const BATCH_SIZE = 400;
+
+/** Delete documents in chunks (Firestore batches are limited to 500 writes). */
+const deleteInBatches = async (refs: DocumentReference[]) => {
+  for (let i = 0; i < refs.length; i += BATCH_SIZE) {
+    const batch = writeBatch(db!);
+    refs.slice(i, i + BATCH_SIZE).forEach((r) => batch.delete(r));
+    await batch.commit();
+  }
+};
 
 
 export const addTransaction = async (userId: string, transaction: Omit<Transaction, 'id' | 'createdAt' | 'userId'>) => {
@@ -20,10 +34,11 @@ export const addTransaction = async (userId: string, transaction: Omit<Transacti
     if (!isFirebaseConfigured || !db) {
       throw new Error('Firebase is not configured');
     }
+    const clean = validateTransaction(transaction);
     const transactionData = {
-      ...transaction,
+      ...clean,
       userId,
-      date: Timestamp.fromDate(transaction.date),
+      date: Timestamp.fromDate(clean.date),
       createdAt: Timestamp.now(),
     };
     
@@ -33,9 +48,8 @@ export const addTransaction = async (userId: string, transaction: Omit<Transacti
     await logUserAction(userId, 'transaction', LOG_ACTIONS.TRANSACTION.CREATE, {
       transactionId: docRef.id,
       type: transaction.type,
-      amount: transaction.amount,
-      category: transaction.category,
-      description: transaction.description
+      amount: clean.amount,
+      category: clean.category
     });
     
     return docRef.id;
@@ -68,7 +82,7 @@ export const getUserTransactions = async (userId: string): Promise<Transaction[]
       id: doc.id,
       ...doc.data(),
       date: doc.data().date.toDate(),
-      createdAt: doc.data().createdAt.toDate(),
+      createdAt: doc.data().createdAt?.toDate?.() ?? new Date(),
     })) as Transaction[];
     
     return transactions;
@@ -85,39 +99,37 @@ export const getUserTransactions = async (userId: string): Promise<Transaction[]
   }
 };
 
-export const updateTransaction = async (id: string, updates: Partial<Transaction>) => {
+export const updateTransaction = async (
+  id: string,
+  userId: string,
+  updates: Partial<Omit<Transaction, 'id' | 'userId' | 'createdAt'>>
+) => {
   try {
     if (!isFirebaseConfigured || !db) {
       throw new Error('Firebase is not configured');
     }
-    const transactionRef = doc(db, 'transactions', id);
-    const updateData: any = { ...updates };
-    
-    if (updates.date) {
-      updateData.date = Timestamp.fromDate(updates.date);
-    }
-    
-    await updateDoc(transactionRef, updateData);
-    
-    // Log the update action
-    if (updates.userId) {
-      await logUserAction(updates.userId, 'transaction', LOG_ACTIONS.TRANSACTION.UPDATE, {
-        transactionId: id,
-        updatedFields: Object.keys(updates)
-      });
-    }
+    if (!userId) throw new Error('Not authenticated');
+    // Only whitelisted, validated fields are ever written. Ownership is enforced by firestore.rules.
+    const clean = validateTransaction(updates);
+    await updateDoc(doc(db, 'transactions', id), {
+      type: clean.type,
+      amount: clean.amount,
+      description: clean.description,
+      category: clean.category,
+      date: Timestamp.fromDate(clean.date),
+    });
+
+    await logUserAction(userId, 'transaction', LOG_ACTIONS.TRANSACTION.UPDATE, {
+      transactionId: id,
+      updatedFields: Object.keys(updates)
+    });
   } catch (error) {
     console.error('Error updating transaction:', error);
-    
-    // Log the error
-    if (updates.userId) {
-      await logUserAction(updates.userId, 'system', LOG_ACTIONS.SYSTEM.ERROR, {
-        action: 'update_transaction',
-        transactionId: id,
-        error: error instanceof Error ? error.message : 'Unknown error'
-      });
-    }
-    
+    await logUserAction(userId, 'system', LOG_ACTIONS.SYSTEM.ERROR, {
+      action: 'update_transaction',
+      transactionId: id,
+      error: error instanceof Error ? error.message : 'Unknown error'
+    });
     throw error;
   }
 };
@@ -182,7 +194,11 @@ export const addNote = async (note: Omit<Note, 'id' | 'createdAt' | 'updatedAt'>
       throw new Error('Firebase is not configured');
     }
     const noteData = {
-      ...note,
+      userId: note.userId,
+      title: sanitizeText(note.title, 200),
+      content: String(note.content ?? '').slice(0, 10000),
+      category: note.category,
+      tags: (note.tags || []).slice(0, 20).map((t) => sanitizeText(t, 40)).filter(Boolean),
       createdAt: Timestamp.now(),
       updatedAt: Timestamp.now(),
     };
@@ -228,21 +244,24 @@ export const getUserNotes = async (userId: string): Promise<Note[]> => {
   }
 };
 
-export const updateNote = async (id: string, updates: Partial<Note>) => {
+export const updateNote = async (id: string, userId: string, updates: Partial<Omit<Note, 'id' | 'userId'>>) => {
   try {
     if (!isFirebaseConfigured || !db) {
       throw new Error('Firebase is not configured');
     }
     const noteRef = doc(db, 'notes', id);
-    const updateData: any = { 
-      ...updates,
-      updatedAt: Timestamp.now()
-    };
-    
+    const updateData: Record<string, any> = { updatedAt: Timestamp.now() };
+    if (updates.title !== undefined) updateData.title = sanitizeText(updates.title, 200);
+    if (updates.content !== undefined) updateData.content = String(updates.content).slice(0, 10000);
+    if (updates.category !== undefined) updateData.category = updates.category;
+    if (updates.tags !== undefined) {
+      updateData.tags = updates.tags.slice(0, 20).map((t) => sanitizeText(t, 40)).filter(Boolean);
+    }
+
     await updateDoc(noteRef, updateData);
-    
-    if (updates.userId) {
-      await logUserAction(updates.userId, 'profile', 'update_note', {
+
+    if (userId) {
+      await logUserAction(userId, 'profile', 'update_note', {
         noteId: id,
         updatedFields: Object.keys(updates)
       });
@@ -285,10 +304,6 @@ export const deleteAllUserData = async (userId: string) => {
     );
     const transactionsSnapshot = await getDocs(transactionsQuery);
     
-    const transactionDeletePromises = transactionsSnapshot.docs.map(doc => 
-      deleteDoc(doc.ref)
-    );
-    
     // Delete all notes
     const notesQuery = query(
       collection(db, 'notes'),
@@ -296,9 +311,6 @@ export const deleteAllUserData = async (userId: string) => {
     );
     const notesSnapshot = await getDocs(notesQuery);
     
-    const notesDeletePromises = notesSnapshot.docs.map(doc => 
-      deleteDoc(doc.ref)
-    );
     
     // Delete all activity logs
     const activityQuery = query(
@@ -307,15 +319,11 @@ export const deleteAllUserData = async (userId: string) => {
     );
     const activitySnapshot = await getDocs(activityQuery);
     
-    const activityDeletePromises = activitySnapshot.docs.map(doc => 
-      deleteDoc(doc.ref)
-    );
     
-    // Execute all deletions
-    await Promise.all([
-      ...transactionDeletePromises,
-      ...notesDeletePromises,
-      ...activityDeletePromises
+    await deleteInBatches([
+      ...transactionsSnapshot.docs.map((d) => d.ref),
+      ...notesSnapshot.docs.map((d) => d.ref),
+      ...activitySnapshot.docs.map((d) => d.ref),
     ]);
     
     // Log the deletion

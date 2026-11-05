@@ -1,7 +1,7 @@
 # ExpenseTracker
 
 <p>
-  <img alt="Version" src="https://img.shields.io/badge/version-2.7.9-06b6d4?style=for-the-badge&labelColor=0a0a0a" />
+  <img alt="Version" src="https://img.shields.io/badge/version-3.0.0-06b6d4?style=for-the-badge&labelColor=0a0a0a" />
   <img alt="License: MIT" src="https://img.shields.io/badge/license-MIT-06b6d4?style=for-the-badge&labelColor=0a0a0a" />
   <img alt="Next.js" src="https://img.shields.io/badge/Next.js-16-000000?style=for-the-badge&logo=next.js&logoColor=white&labelColor=0a0a0a" />
   <img alt="TypeScript" src="https://img.shields.io/badge/TypeScript-5-3178C6?style=for-the-badge&logo=typescript&logoColor=white&labelColor=0a0a0a" />
@@ -9,21 +9,18 @@
   <img alt="Deployed on Vercel" src="https://img.shields.io/badge/Deployed_on-Vercel-black?style=for-the-badge&logo=vercel&logoColor=white&labelColor=0a0a0a" />
 </p>
 
-A futuristic expense tracking application built with Next.js, Firebase, and modern UI components. Features a beautiful sci-fi themed interface with dark/light mode support and Google authentication.
+A modern expense tracking app built with Next.js and Firebase, available on the web and as an Android app. Includes light and dark themes, analytics and Google sign-in.
 
 ### 🔗 [**Live Demo → expense-tracker-41vi4p.vercel.app**](https://expense-tracker-41vi4p.vercel.app/)
 
-## 🆕 Version 2.7.8 - Latest Update!
+## 🆕 Version 3.0.0
 
-**What's New:**
-- **✏️ Edit Transaction Feature** - Full implementation of transaction editing with modal interface
-- **📱 Enhanced Mobile Experience** - Always-visible action buttons and improved touch interaction
-- **🎨 UI/UX Improvements** - Fixed balance display, better transaction card alignment
-- **🔄 Navigation Restructuring** - Activity moved to profile, About promoted to main navbar
-- **💰 Currency Consistency** - Fixed rupee symbols in activity logs
-- **🔧 Mobile Optimization** - Better responsiveness and touch-friendly design
+- **📱 Android app** - download the APK from [Releases](https://github.com/41vi4p/Expense-Tracker/releases/latest); a new build is published automatically for every version
+- **🌗 Light & dark themes** - follows your system by default; switch from the header or Settings -> Appearance
+- **🔒 Security hardening** - Firestore security rules, input validation, patched dependencies, security headers, no PII in logs
+- **✨ Refreshed UI** - calmer palette, frosted surfaces, smoother motion
 
-[📖 **View Complete Version 2.7.8 Changelog**](./version_log.md) | [⭐ **Star us on GitHub**](https://github.com/41vi4p/Expense-Tracker) | [🌐 **Try the Live Demo**](https://expense-tracker-41vi4p.vercel.app/)
+[📖 **Full changelog**](./docs/CHANGELOG.md) | [⭐ **Star us on GitHub**](https://github.com/41vi4p/Expense-Tracker) | [🌐 **Try the Live Demo**](https://expense-tracker-41vi4p.vercel.app/)
 
 ## 🚀 Features
 
@@ -32,7 +29,8 @@ A futuristic expense tracking application built with Next.js, Firebase, and mode
 - **📊 Real-time Analytics** - Visual insights with Chart.js and Recharts
 - **📝 Financial Notes** - Keep track of goals, plans, and reminders
 - **🎯 Activity Tracking** - Monitor your financial activities
-- **🌙 Dark/Light Theme** - Modern sci-fi themed UI with theme switching
+- **🌗 Light/Dark/System Theme** - Smooth, modern UI with instant theme switching
+- **🤖 Android App** - Capacitor-wrapped APK with native Google sign-in
 - **📱 Mobile-First Design** - Optimized for mobile devices
 - **🔥 Firebase Integration** - Real-time database with Firestore
 - **⚡ Fast Performance** - Built with Next.js 16 and TypeScript
@@ -56,7 +54,8 @@ A futuristic expense tracking application built with Next.js, Firebase, and mode
 - **Charts**: Chart.js, React Chart.js 2, Recharts
 - **UI Components**: Framer Motion, React Hot Toast
 - **Icons**: Lucide React
-- **Deployment**: Vercel
+- **Mobile**: Capacitor (Android)
+- **Deployment**: Vercel + GitHub Releases (APK)
 
 ## 📦 Installation
 
@@ -87,6 +86,7 @@ NEXT_PUBLIC_FIREBASE_APP_ID=your_app_id
 4. Set up Firebase:
    - Create a new Firebase project in the Firebase Console
    - Enable Authentication and Firestore Database
+   - **Deploy the security rules**: `npx firebase-tools deploy --only firestore:rules` (uses `firestore.rules`). Without them your data is not protected.
    - Add Google as an authentication provider in Firebase Auth
    - Add your domain (localhost:3000) to authorized domains
    - Copy your Firebase config to the environment variables
@@ -100,11 +100,25 @@ npm run dev
 
 ## 🎨 UI Features
 
-- **Sci-Fi Theme**: Futuristic design with glowing effects and gradients
-- **Mobile-First**: Responsive design optimized for smartphones
-- **Smooth Animations**: Framer Motion powered transitions
-- **Custom Fonts**: Orbitron for headings, Rajdhani for body text
-- **Color Scheme**: Cyberpunk-inspired color palette with cyan accents
+- **Light & Dark themes**: system default, header toggle, Settings -> Appearance; no flash on load
+- **Mobile-first**: responsive layout with safe-area support, bottom navigation on phones
+- **Smooth motion**: Framer Motion transitions (respects reduced-motion settings)
+- **Typography**: Poppins for headings, Source Sans 3 for body text
+- **Semantic design tokens**: colours live in `src/app/globals.css` and adapt per theme
+
+## 🤖 Android app
+
+Grab `ExpenseTracker-vX.Y.Z.apk` from the [latest release](https://github.com/41vi4p/Expense-Tracker/releases/latest), open it on your device and allow installs from your browser/file manager when prompted.
+
+Releases are built by GitHub Actions whenever the version in `package.json` changes on `main`, and the release notes come from [`docs/CHANGELOG.md`](./docs/CHANGELOG.md). Setup (secrets, signing, Google sign-in) and local builds are covered in [docs/ANDROID.md](./docs/ANDROID.md).
+
+## 🔒 Security
+
+- Firestore rules ([`firestore.rules`](./firestore.rules)) keep every record private to its owner and validate writes
+- Client-side validation and sanitising for all writes and imports
+- Security headers on the web deployment; HTTPS-only, no backups, no cleartext traffic in the Android app
+- Activity logs contain no personal data
+- Report vulnerabilities privately via GitHub Security Advisories
 
 ## 📱 Pages
 
@@ -113,7 +127,7 @@ npm run dev
 - **Analytics**: Visual breakdown of spending by category and trends
 - **Notes**: Financial notes with categories and tags
 - **Activity**: Track user actions and account activities
-- **Profile**: User settings and account management
+- **Profile / Settings**: Account, theme, data export/import and deletion
 
 ## 🔧 Development
 
@@ -129,11 +143,18 @@ npm start
 
 # Run linter
 npm run lint
+
+# Type check
+npx tsc --noEmit
+
+# Static export for Android / build a debug APK (JDK 21 + Android SDK)
+npm run build:static
+npm run android:debug
 ```
 
 ## 🤝 Contributing
 
-Contributions are welcome! Please feel free to submit a Pull Request.
+Contributions are welcome! Please read [CLAUDE.md](./CLAUDE.md) first. Every change must bump the version in `package.json` and add an entry to [`docs/CHANGELOG.md`](./docs/CHANGELOG.md).
 
 ## 📄 License
 

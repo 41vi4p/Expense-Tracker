@@ -23,7 +23,7 @@ export default function BottomNavigation() {
       transition={{ duration: 0.3 }}
       className="fixed bottom-0 left-0 right-0 z-50 lg:hidden"
     >
-      <div className="bg-black/20 backdrop-blur-glass border-t border-white/10 rounded-t-3xl shadow-2xl shadow-black/50">
+      <div className="backdrop-blur-glass border-t rounded-t-3xl pb-[env(safe-area-inset-bottom)]">
         <div className="flex justify-center items-center py-3 px-4 sm:px-6 md:px-8">
           <div className="flex items-center justify-between w-full max-w-sm sm:max-w-md md:max-w-lg lg:max-w-xl gap-2 sm:gap-4 md:gap-6">
             {navItems.map((item) => {
@@ -50,7 +50,7 @@ export default function BottomNavigation() {
                           className={`h-5 w-5 sm:h-6 sm:w-6 md:h-7 md:w-7 transition-all duration-200 ${
                             isActive
                               ? 'text-white'
-                              : 'text-gray-400 group-hover:text-gray-200'
+                              : 'text-foreground/55 group-hover:text-foreground'
                           }`}
                         />
                       </div>
@@ -59,7 +59,7 @@ export default function BottomNavigation() {
                         className={`h-5 w-5 sm:h-6 sm:w-6 md:h-7 md:w-7 transition-all duration-200 ${
                           isActive
                             ? 'text-primary glow'
-                            : 'text-gray-400 group-hover:text-gray-200'
+                            : 'text-foreground/55 group-hover:text-foreground'
                         }`}
                       />
                     )}
@@ -77,7 +77,7 @@ export default function BottomNavigation() {
                     className={`text-xs sm:text-sm mt-1 transition-all duration-200 ${
                       isActive
                         ? 'text-primary font-medium'
-                        : 'text-gray-500 group-hover:text-gray-300'
+                        : 'text-foreground/50 group-hover:text-foreground'
                     } ${isDashboard ? 'font-semibold' : ''}`}
                   >
                     {item.label}

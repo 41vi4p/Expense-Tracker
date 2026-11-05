@@ -4,6 +4,7 @@
 export const dynamic = 'force-dynamic';
 
 import React from 'react';
+import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { User, Mail, Calendar, Settings, LogOut } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
@@ -11,6 +12,7 @@ import DashboardLayout from '@/components/DashboardLayout';
 import Image from 'next/image';
 
 export default function ProfilePage() {
+  const router = useRouter();
   const { user, loading, signOut } = useAuth();
 
 
@@ -180,7 +182,7 @@ export default function ProfilePage() {
               <motion.button
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
-                onClick={() => window.location.href = '/dashboard'}
+                onClick={() => router.push('/dashboard')}
                 className="w-full bg-gradient-primary hover:bg-gradient-to-r hover:from-primary hover:to-accent text-white font-semibold py-4 px-6 rounded-xl transition-all duration-300 font-body glow hover:glow-accent"
               >
                 Back to Dashboard

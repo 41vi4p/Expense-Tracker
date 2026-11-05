@@ -17,12 +17,16 @@ export interface ActivityLog {
   action: string;
   details: Record<string, any>;
   timestamp: Date;
-  userAgent?: string;
-  ipAddress?: string;
 }
 
 // Set to false to temporarily disable all logging
 const LOGGING_ENABLED = true;
+
+const PII_KEYS = new Set(['email', 'name', 'displayName', 'photoURL']);
+
+/** Activity logs must never contain personal data such as email or display name. */
+const stripPii = (details: Record<string, any>): Record<string, any> =>
+  Object.fromEntries(Object.entries(details).filter(([k]) => !PII_KEYS.has(k)));
 
 export const logUserAction = async (
   userId: string,
@@ -40,10 +44,8 @@ export const logUserAction = async (
       userId,
       category,
       action,
-      details,
+      details: stripPii(details),
       timestamp: Timestamp.now(),
-      userAgent: typeof window !== 'undefined' ? navigator.userAgent : 'server',
-      ipAddress: 'unknown' // In a real app, you'd get this from the server
     };
 
     await addDoc(collection(db, 'activity_logs'), logData);
@@ -79,31 +81,6 @@ export const getUserActivityLogs = async (
     })) as ActivityLog[];
   } catch (error) {
     console.error('Error getting activity logs:', error);
-    return [];
-  }
-};
-
-export const getSystemActivityLogs = async (
-  limitCount: number = 100
-): Promise<ActivityLog[]> => {
-  try {
-    if (!isFirebaseConfigured || !db) {
-      return [];
-    }
-    const q = query(
-      collection(db, 'activity_logs'),
-      orderBy('timestamp', 'desc'),
-      limit(limitCount)
-    );
-    
-    const querySnapshot = await getDocs(q);
-    return querySnapshot.docs.map(doc => ({
-      id: doc.id,
-      ...doc.data(),
-      timestamp: doc.data().timestamp.toDate(),
-    })) as ActivityLog[];
-  } catch (error) {
-    console.error('Error getting system activity logs:', error);
     return [];
   }
 };

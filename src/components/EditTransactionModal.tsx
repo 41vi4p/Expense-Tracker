@@ -41,7 +41,7 @@ export default function EditTransactionModal({ transaction, onClose, onTransacti
 
     setLoading(true);
     try {
-      await updateTransaction(transaction.id, {
+      await updateTransaction(transaction.id, transaction.userId, {
         type,
         amount: parseFloat(amount),
         description,
@@ -64,7 +64,7 @@ export default function EditTransactionModal({ transaction, onClose, onTransacti
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+        className="fixed inset-0 modal-overlay z-50 flex items-center justify-center p-4"
         onClick={onClose}
       >
         <motion.div

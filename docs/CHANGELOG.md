@@ -7,6 +7,11 @@ The text of the matching section is used verbatim as the GitHub release notes.
 
 Older history (pre-3.0) lives in [VERSION_HISTORY_LEGACY.md](./VERSION_HISTORY_LEGACY.md).
 
+## [3.0.1] - 2026-11-05
+
+### Fixed
+- Release workflow failed while setting up the Android SDK; it now uses the SDK preinstalled on the build runner.
+
 ## [3.0.0] - 2026-11-05
 
 ### Highlights

@@ -69,8 +69,14 @@ jobs:
           distribution: temurin
           java-version: 21
 
-      - uses: android-actions/setup-android@v3
+      - name: Prepare Android SDK
         if: steps.v.outputs.exists == 'false' || github.event_name == 'workflow_dispatch'
+        run: |
+          # ubuntu-latest ships with the Android SDK; just accept licenses and add the needed platform.
+          SDKM=$(command -v sdkmanager || echo "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager")
+          yes | "$SDKM" --licenses >/dev/null || true
+          "$SDKM" "platforms;android-36" "build-tools;36.0.0"
+          echo "sdk.dir=$ANDROID_HOME" > android/local.properties
 
       - name: Install & build web bundle
         if: steps.v.outputs.exists == 'false' || github.event_name == 'workflow_dispatch'

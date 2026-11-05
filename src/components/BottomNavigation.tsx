@@ -23,7 +23,7 @@ export default function BottomNavigation() {
       transition={{ duration: 0.3 }}
       className="fixed bottom-0 left-0 right-0 z-50 lg:hidden"
     >
-      <div className="backdrop-blur-glass border-t rounded-t-3xl pb-[env(safe-area-inset-bottom)]">
+      <div className="bottom-bar border-t rounded-t-3xl pb-[env(safe-area-inset-bottom)]">
         <div className="flex justify-center items-center py-3 px-4 sm:px-6 md:px-8">
           <div className="flex items-center justify-between w-full max-w-sm sm:max-w-md md:max-w-lg lg:max-w-xl gap-2 sm:gap-4 md:gap-6">
             {navItems.map((item) => {

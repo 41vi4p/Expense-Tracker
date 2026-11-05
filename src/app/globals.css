@@ -134,6 +134,14 @@ textarea {
   box-shadow: var(--shadow-soft);
 }
 
+.bottom-bar {
+  background: color-mix(in srgb, var(--surface) 96%, transparent);
+  border-color: var(--border);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  box-shadow: 0 -6px 24px rgba(0, 0, 0, 0.18);
+}
+
 .modal-overlay {
   background: var(--overlay);
   backdrop-filter: blur(6px);

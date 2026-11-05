@@ -19,7 +19,7 @@ You can also run it manually from the Actions tab (**Run workflow**) to rebuild/
 | Secret | Purpose |
 | --- | --- |
 | `NEXT_PUBLIC_FIREBASE_API_KEY`, `NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN`, `NEXT_PUBLIC_FIREBASE_PROJECT_ID`, `NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET`, `NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID`, `NEXT_PUBLIC_FIREBASE_APP_ID` | Firebase web config baked into the bundle (same values as `.env.local`). **Required**, otherwise the APK can't sign in or load data. |
-| `GOOGLE_SERVICES_JSON` | Full contents of `google-services.json` (Firebase console -> Project settings -> Android app `com.expensetracker.app`). Needed for native Google sign-in. |
+| `GOOGLE_SERVICES_JSON` | Full, unmodified contents of `google-services.json` for the **Android** app `com.expensetracker.app` (Firebase console -> Project settings -> Your apps -> Android -> `google-services.json`). It must contain `project_info` and a `client` entry; the web config will not work. The workflow validates this. Needed for native Google sign-in. |
 | `ANDROID_KEYSTORE_BASE64`, `ANDROID_KEYSTORE_PASSWORD`, `ANDROID_KEY_ALIAS`, `ANDROID_KEY_PASSWORD` | Release signing key. Optional: without them the APK is signed with the debug key (installable, but updates from a differently signed build will be rejected). |
 
 ### Create a signing key

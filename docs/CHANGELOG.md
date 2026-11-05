@@ -7,6 +7,11 @@ The text of the matching section is used verbatim as the GitHub release notes.
 
 Older history (pre-3.0) lives in [VERSION_HISTORY_LEGACY.md](./VERSION_HISTORY_LEGACY.md).
 
+## [3.0.6] - 2026-11-05
+
+### Changed
+- The release workflow now validates the `GOOGLE_SERVICES_JSON` secret and fails early with a clear message if it is not a valid Android `google-services.json` for `com.expensetracker.app`.
+
 ## [3.0.5] - 2026-11-05
 
 ### Fixed

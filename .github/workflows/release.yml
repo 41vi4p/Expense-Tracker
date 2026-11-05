@@ -92,6 +92,17 @@ jobs:
         run: |
           if [ -n "$GOOGLE_SERVICES_JSON" ]; then
             printf '%s' "$GOOGLE_SERVICES_JSON" > android/app/google-services.json
+            # Fail early with a readable message instead of deep inside Gradle.
+            node -e '
+              let j; try { j = JSON.parse(require("fs").readFileSync("android/app/google-services.json","utf8")); }
+              catch (e) { console.error("::error::GOOGLE_SERVICES_JSON secret is not valid JSON. Paste the entire contents of google-services.json."); process.exit(1); }
+              if (!j.project_info || !Array.isArray(j.client) || !j.client.length) {
+                console.error("::error::GOOGLE_SERVICES_JSON is not an Android google-services.json (missing project_info/client). Download it from Firebase console > Project settings > Your apps > Android (com.expensetracker.app), not the web config.");
+                process.exit(1);
+              }
+              const ok = j.client.some(c => c.client_info && c.client_info.android_client_info && c.client_info.android_client_info.package_name === "com.expensetracker.app");
+              if (!ok) { console.error("::error::google-services.json has no Android app with package com.expensetracker.app. Add that app in Firebase console and download the file again."); process.exit(1); }
+            '
           else
             echo "::warning::GOOGLE_SERVICES_JSON secret not set - native Google sign-in will not work in this APK."
           fi

@@ -26,7 +26,7 @@ and it fails if `docs/CHANGELOG.md` has no section for that version. Forgetting 
 
 ## Requirements
 
-Node.js >= 24.12 (required by Firebase 12; enforced via `engines`, used by Vercel and CI).
+Node.js >= 26 (enforced via `engines`; used by Vercel and CI. Firebase 12 itself needs >= 24.12).
 
 ## Commands
 

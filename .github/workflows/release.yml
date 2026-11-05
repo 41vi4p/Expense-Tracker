@@ -60,7 +60,7 @@ jobs:
       - uses: actions/setup-node@v4
         if: steps.v.outputs.exists == 'false' || github.event_name == 'workflow_dispatch'
         with:
-          node-version: 24
+          node-version: 26
           cache: npm
 
       - uses: actions/setup-java@v4

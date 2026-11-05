@@ -12,17 +12,23 @@ const firebaseConfig = {
 };
 
 // Check if Firebase config is available
-const isFirebaseConfigured = firebaseConfig.apiKey && 
-  firebaseConfig.authDomain && 
-  firebaseConfig.projectId;
-// Initialize Firebase only if properly configured
-const app = isFirebaseConfigured && getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0];
+const isFirebaseConfigured = Boolean(
+  firebaseConfig.apiKey && firebaseConfig.authDomain && firebaseConfig.projectId
+);
+
+// Firebase Auth/Firestore are browser-only here (every page is a client component and data is
+// loaded in effects). Initialising them during server prerender crashes the build with
+// "Component auth has not been registered yet", so only initialise in the browser.
+const isBrowser = typeof window !== 'undefined';
+const canInit = isFirebaseConfigured && isBrowser;
+
+const app = canInit ? (getApps()[0] ?? initializeApp(firebaseConfig)) : undefined;
 
 // Initialize Firebase Authentication and get a reference to the service
-export const auth = isFirebaseConfigured ? getAuth(app) : null;
+export const auth = app ? getAuth(app) : null;
 
 // Initialize Google Auth Provider
-export const googleProvider = isFirebaseConfigured ? new GoogleAuthProvider() : null;
+export const googleProvider = app ? new GoogleAuthProvider() : null;
 if (googleProvider) {
   googleProvider.setCustomParameters({
     prompt: 'select_account'
@@ -30,7 +36,7 @@ if (googleProvider) {
 }
 
 // Initialize Cloud Firestore and get a reference to the service
-export const db = isFirebaseConfigured ? getFirestore(app) : null;
+export const db = app ? getFirestore(app) : null;
 
 export { isFirebaseConfigured };
 

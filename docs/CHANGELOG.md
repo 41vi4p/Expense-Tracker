@@ -7,6 +7,22 @@ The text of the matching section is used verbatim as the GitHub release notes.
 
 Older history (pre-3.0) lives in [VERSION_HISTORY_LEGACY.md](./VERSION_HISTORY_LEGACY.md).
 
+## [3.0.3] - 2026-11-05
+
+### Fixed
+- Vercel/CI builds and the running app failed with "Component auth has not been registered yet". Two copies of `@firebase/app` were installed (now pinned to one via `overrides`), and Firebase is now only initialised in the browser, never during server prerender.
+
+### Changed
+- Required Node.js version raised to 26 (`engines` in `package.json`, CI and release workflows).
+
+## [3.0.2] - 2026-11-05
+
+### Fixed
+- Vercel and CI builds failed with "Component auth has not been registered yet" because the Firebase 12 SDK requires Node 24.
+
+### Changed
+- Upgraded the required Node.js version to 24 (`engines` in `package.json`, CI and release workflows).
+
 ## [3.0.1] - 2026-11-05
 
 ### Fixed

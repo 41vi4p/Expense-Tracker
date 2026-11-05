@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '@/contexts/AuthContext';
+import { useTheme } from '@/contexts/ThemeContext';
 import { 
   Menu, 
   X, 
@@ -16,7 +17,9 @@ import {
   Activity,
   FileText,
   Settings,
-  Info
+  Info,
+  Sun,
+  Moon
 } from 'lucide-react';
 import Image from 'next/image';
 import { logUserAction, LOG_ACTIONS } from '@/lib/logging';
@@ -24,6 +27,7 @@ import { logUserAction, LOG_ACTIONS } from '@/lib/logging';
 export default function Header() {
   const { user, signOut } = useAuth();
   const router = useRouter();
+  const { theme, toggleTheme } = useTheme();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
 
@@ -105,6 +109,27 @@ export default function Header() {
 
           {/* Right side controls */}
           <div className="flex items-center space-x-2 sm:space-x-4">
+            {/* Theme toggle */}
+            <motion.button
+              whileHover={{ scale: 1.08 }}
+              whileTap={{ scale: 0.9 }}
+              onClick={toggleTheme}
+              aria-label={theme === 'dark' ? 'Switch to light theme' : 'Switch to dark theme'}
+              className="p-2 sm:p-2.5 rounded-xl backdrop-blur-glass hover:border-primary/50 transition-all"
+            >
+              <AnimatePresence mode="wait" initial={false}>
+                <motion.span
+                  key={theme}
+                  initial={{ rotate: -90, opacity: 0 }}
+                  animate={{ rotate: 0, opacity: 1 }}
+                  exit={{ rotate: 90, opacity: 0 }}
+                  transition={{ duration: 0.18 }}
+                  className="block"
+                >
+                  {theme === 'dark' ? <Sun className="w-5 h-5 text-warning" /> : <Moon className="w-5 h-5 text-accent" />}
+                </motion.span>
+              </AnimatePresence>
+            </motion.button>
 
             {/* Profile Dropdown */}
             <div className="relative">
@@ -133,15 +158,17 @@ export default function Header() {
               {/* Profile Dropdown Menu */}
               <AnimatePresence>
                 {isProfileOpen && (
+                  <>
+                  <div className="fixed inset-0 z-40" onClick={() => setIsProfileOpen(false)} aria-hidden="true" />
                   <motion.div
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: 10 }}
-                    className="absolute right-0 mt-2 w-48 bg-surface-dark/95 backdrop-blur-xl border border-border/70 rounded-xl shadow-2xl overflow-hidden"
+                    className="absolute right-0 mt-2 w-56 z-50 bg-surface border border-border rounded-2xl shadow-2xl overflow-hidden"
                   >
                     <div className="p-4 border-b border-border/70">
                       <p className="font-body font-semibold text-sm">{user?.displayName}</p>
-                      <p className="font-body text-xs text-foreground/70">{user?.email}</p>
+                      <p className="font-body text-xs text-foreground/70 truncate">{user?.email}</p>
                     </div>
                     <div className="p-2">
                       <button
@@ -186,6 +213,7 @@ export default function Header() {
                       </button>
                     </div>
                   </motion.div>
+                  </>
                 )}
               </AnimatePresence>
             </div>

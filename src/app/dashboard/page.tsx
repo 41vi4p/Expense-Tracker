@@ -4,10 +4,11 @@
 export const dynamic = 'force-dynamic';
 
 import { useEffect, useState, useCallback } from 'react';
+import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { Plus, TrendingUp, TrendingDown, Wallet, PieChart, BarChart3 } from 'lucide-react';
 import { Transaction } from '@/types';
-import { getUserTransactions, getUserStats } from '@/lib/firestore';
+import { getUserTransactions } from '@/lib/firestore';
 import { useAuth } from '@/contexts/AuthContext';
 import { logUserAction, LOG_ACTIONS } from '@/lib/logging';
 import toast from 'react-hot-toast';
@@ -20,6 +21,7 @@ import IncomeChart from '@/components/charts/IncomeChart';
 import TrendChart from '@/components/charts/TrendChart';
 
 export default function DashboardPage() {
+  const router = useRouter();
   const { user } = useAuth();
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [stats, setStats] = useState({ totalIncome: 0, totalExpenses: 0, balance: 0 });
@@ -45,13 +47,12 @@ export default function DashboardPage() {
     
     try {
       setLoading(true);
-      const [userTransactions, userStats] = await Promise.all([
-        getUserTransactions(user.uid),
-        getUserStats(user.uid)
-      ]);
-      
+      const userTransactions = await getUserTransactions(user.uid);
+      const totalIncome = userTransactions.filter(t => t.type === 'income').reduce((a, t) => a + t.amount, 0);
+      const totalExpenses = userTransactions.filter(t => t.type === 'expense').reduce((a, t) => a + t.amount, 0);
+
       setTransactions(userTransactions);
-      setStats(userStats);
+      setStats({ totalIncome, totalExpenses, balance: totalIncome - totalExpenses });
     } catch (error) {
       console.error('Error loading data:', error);
       toast.error('Failed to load data');
@@ -163,7 +164,7 @@ export default function DashboardPage() {
               <span className="font-body">Add Transaction</span>
             </button>
             <button
-              onClick={() => window.location.href = '/analytics'}
+              onClick={() => router.push('/analytics')}
               className="backdrop-blur-glass border border-border/50 hover:border-primary/50 text-foreground font-semibold py-4 px-6 rounded-xl transition-all duration-300 flex items-center justify-center space-x-3 hover:glow transform hover:scale-105"
             >
               <TrendingUp className="w-5 h-5" />
@@ -296,7 +297,7 @@ export default function DashboardPage() {
           <div className="flex justify-between items-center mb-4">
             <h2 className="text-xl font-display font-semibold">Recent Transactions</h2>
             <button
-              onClick={() => window.location.href = '/transactions'}
+              onClick={() => router.push('/transactions')}
               className="text-primary hover:text-accent font-body text-sm transition-colors"
             >
               View All

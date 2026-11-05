@@ -1,0 +1,151 @@
+name: Build & Release APK
+
+# Runs on every push to main. A release is only published when the version in
+# package.json has no matching git tag yet, so bump the version (see CLAUDE.md)
+# and document it in docs/CHANGELOG.md for each change.
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    env:
+      NEXT_PUBLIC_FIREBASE_API_KEY: ${{ secrets.NEXT_PUBLIC_FIREBASE_API_KEY }}
+      NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN: ${{ secrets.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN }}
+      NEXT_PUBLIC_FIREBASE_PROJECT_ID: ${{ secrets.NEXT_PUBLIC_FIREBASE_PROJECT_ID }}
+      NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET: ${{ secrets.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET }}
+      NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID: ${{ secrets.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID }}
+      NEXT_PUBLIC_FIREBASE_APP_ID: ${{ secrets.NEXT_PUBLIC_FIREBASE_APP_ID }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Read version
+        id: v
+        run: |
+          VERSION=$(node -p "require('./package.json').version")
+          IFS=. read -r MAJ MIN PAT <<< "$VERSION"
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "code=$((MAJ * 10000 + MIN * 100 + PAT))" >> "$GITHUB_OUTPUT"
+          if git rev-parse -q --verify "refs/tags/v$VERSION" >/dev/null || \
+             git ls-remote --exit-code --tags origin "v$VERSION" >/dev/null 2>&1; then
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "exists=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Skip (release already exists)
+        if: steps.v.outputs.exists == 'true' && github.event_name != 'workflow_dispatch'
+        run: echo "Tag v${{ steps.v.outputs.version }} already exists - bump the version in package.json to publish a new release."
+
+      - name: Verify changelog entry
+        if: steps.v.outputs.exists == 'false' || github.event_name == 'workflow_dispatch'
+        run: |
+          NOTES=$(scripts/release-notes.sh "${{ steps.v.outputs.version }}")
+          if [ -z "$NOTES" ]; then
+            echo "::error::docs/CHANGELOG.md has no '## [${{ steps.v.outputs.version }}]' section"
+            exit 1
+          fi
+
+      - uses: actions/setup-node@v4
+        if: steps.v.outputs.exists == 'false' || github.event_name == 'workflow_dispatch'
+        with:
+          node-version: 22
+          cache: npm
+
+      - uses: actions/setup-java@v4
+        if: steps.v.outputs.exists == 'false' || github.event_name == 'workflow_dispatch'
+        with:
+          distribution: temurin
+          java-version: 21
+
+      - uses: android-actions/setup-android@v3
+        if: steps.v.outputs.exists == 'false' || github.event_name == 'workflow_dispatch'
+
+      - name: Install & build web bundle
+        if: steps.v.outputs.exists == 'false' || github.event_name == 'workflow_dispatch'
+        run: |
+          npm ci
+          npx tsc --noEmit
+          npm run build:static
+
+      - name: Add Firebase Android config
+        if: steps.v.outputs.exists == 'false' || github.event_name == 'workflow_dispatch'
+        env:
+          GOOGLE_SERVICES_JSON: ${{ secrets.GOOGLE_SERVICES_JSON }}
+        run: |
+          if [ -n "$GOOGLE_SERVICES_JSON" ]; then
+            printf '%s' "$GOOGLE_SERVICES_JSON" > android/app/google-services.json
+          else
+            echo "::warning::GOOGLE_SERVICES_JSON secret not set - native Google sign-in will not work in this APK."
+          fi
+
+      - name: Decode signing keystore
+        if: steps.v.outputs.exists == 'false' || github.event_name == 'workflow_dispatch'
+        env:
+          KEYSTORE_B64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+        run: |
+          if [ -n "$KEYSTORE_B64" ]; then
+            echo "$KEYSTORE_B64" | base64 -d > "$RUNNER_TEMP/release.keystore"
+            echo "ANDROID_KEYSTORE_PATH=$RUNNER_TEMP/release.keystore" >> "$GITHUB_ENV"
+            echo "ANDROID_KEYSTORE_PASSWORD=${{ secrets.ANDROID_KEYSTORE_PASSWORD }}" >> "$GITHUB_ENV"
+            echo "ANDROID_KEY_ALIAS=${{ secrets.ANDROID_KEY_ALIAS }}" >> "$GITHUB_ENV"
+            echo "ANDROID_KEY_PASSWORD=${{ secrets.ANDROID_KEY_PASSWORD }}" >> "$GITHUB_ENV"
+          else
+            echo "::warning::No release keystore configured - APK will be signed with the debug key."
+          fi
+
+      - name: Build APK
+        if: steps.v.outputs.exists == 'false' || github.event_name == 'workflow_dispatch'
+        run: |
+          npx cap sync android
+          cd android
+          ./gradlew assembleRelease --no-daemon \
+            -PappVersionName=${{ steps.v.outputs.version }} \
+            -PappVersionCode=${{ steps.v.outputs.code }}
+          cd ..
+          mkdir -p dist
+          cp android/app/build/outputs/apk/release/*.apk "dist/ExpenseTracker-v${{ steps.v.outputs.version }}.apk"
+          (cd dist && sha256sum *.apk > SHA256SUMS.txt)
+
+      - name: Prepare release notes
+        if: steps.v.outputs.exists == 'false' || github.event_name == 'workflow_dispatch'
+        run: |
+          {
+            scripts/release-notes.sh "${{ steps.v.outputs.version }}"
+            echo
+            echo "---"
+            echo "**Install:** download \`ExpenseTracker-v${{ steps.v.outputs.version }}.apk\` below and open it on your Android device (allow installs from this source when prompted). Verify the download against \`SHA256SUMS.txt\`."
+            echo
+            echo "Full history: [docs/CHANGELOG.md](https://github.com/${{ github.repository }}/blob/main/docs/CHANGELOG.md)"
+          } > release-notes.md
+
+      - name: Publish GitHub release
+        if: steps.v.outputs.exists == 'false' || github.event_name == 'workflow_dispatch'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          TAG="v${{ steps.v.outputs.version }}"
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            gh release upload "$TAG" dist/* --clobber
+            gh release edit "$TAG" --notes-file release-notes.md
+          else
+            gh release create "$TAG" dist/* --target "${{ github.sha }}" \
+              --title "ExpenseTracker $TAG" --notes-file release-notes.md
+          fi
+
+      - uses: actions/upload-artifact@v4
+        if: steps.v.outputs.exists == 'false' || github.event_name == 'workflow_dispatch'
+        with:
+          name: ExpenseTracker-apk
+          path: dist/*

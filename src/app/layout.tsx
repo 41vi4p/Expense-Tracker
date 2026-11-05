@@ -6,7 +6,7 @@ import { Toaster } from "react-hot-toast";
 
 export const metadata: Metadata = {
   title: "ExpenseTracker",
-  description: "A futuristic expense tracking app with real-time analytics and intelligent insights",
+  description: "A modern expense tracking app with real-time analytics and insights",
   keywords: ["expense tracker", "finance", "budget", "money management"],
   authors: [{ name: "David Porathur" }],
 };
@@ -15,8 +15,15 @@ export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   maximumScale: 1,
-  themeColor: "#00d4ff",
+  viewportFit: "cover",
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#f6f7fb" },
+    { media: "(prefers-color-scheme: dark)", color: "#0b0f17" },
+  ],
 };
+
+// Runs before first paint so the correct theme is applied with no flash.
+const themeInitScript = `(function(){try{var p=localStorage.getItem('theme');var d=p==='dark'||((p!=='light')&&window.matchMedia('(prefers-color-scheme: dark)').matches);var r=document.documentElement;r.classList.remove('light','dark');r.classList.add(d?'dark':'light');r.style.colorScheme=d?'dark':'light';}catch(e){}})();`;
 
 export default function RootLayout({
   children,
@@ -24,9 +31,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="dark">
+    <html lang="en" className="dark" suppressHydrationWarning>
       <head>
         <link rel="icon" href="/favicon.ico" />
+        <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
       </head>
       <body className="font-body antialiased bg-background text-foreground min-h-screen">
         <AuthProvider>

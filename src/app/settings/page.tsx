@@ -4,6 +4,7 @@
 export const dynamic = 'force-dynamic';
 
 import { useAuth } from '@/contexts/AuthContext';
+import { useTheme } from '@/contexts/ThemeContext';
 import { useEffect, useState, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { 
@@ -15,15 +16,20 @@ import {
   Trash2,
   AlertTriangle,
   CheckCircle,
-  XCircle
+  XCircle,
+  Sun,
+  Moon,
+  Monitor
 } from 'lucide-react';
 import { getUserTransactions, deleteAllUserData, addTransaction } from '@/lib/firestore';
 import { logUserAction, LOG_ACTIONS } from '@/lib/logging';
+import { MAX_IMPORT_BYTES, MAX_IMPORT_ROWS } from '@/lib/validation';
 import toast from 'react-hot-toast';
 import DashboardLayout from '@/components/DashboardLayout';
 
 export default function SettingsPage() {
   const { user } = useAuth();
+  const { preference, setPreference } = useTheme();
   const [loading, setLoading] = useState(false);
   const [exportLoading, setExportLoading] = useState(false);
   const [importLoading, setImportLoading] = useState(false);
@@ -50,9 +56,7 @@ export default function SettingsPage() {
       const exportData = {
         user: {
           id: user.uid,
-          name: user?.displayName,
-          email: user?.email,
-          photoURL: user?.photoURL
+          name: user?.displayName
         },
         transactions: transactions,
         exportDate: new Date().toISOString(),
@@ -88,11 +92,17 @@ export default function SettingsPage() {
     
     try {
       setImportLoading(true);
+      if (file.size > MAX_IMPORT_BYTES) {
+        throw new Error('File is too large');
+      }
       const text = await file.text();
       const data = JSON.parse(text);
-      
-      if (!data.transactions || !Array.isArray(data.transactions)) {
+
+      if (!data || !Array.isArray(data.transactions)) {
         throw new Error('Invalid data format');
+      }
+      if (data.transactions.length > MAX_IMPORT_ROWS) {
+        throw new Error(`Too many transactions (max ${MAX_IMPORT_ROWS})`);
       }
 
       let importedCount = 0;
@@ -181,6 +191,34 @@ export default function SettingsPage() {
             Manage your account settings and data
           </p>
         </motion.div>
+
+        {/* Appearance */}
+        <div className="backdrop-blur-glass rounded-2xl p-5 mb-6">
+          <h2 className="font-display font-semibold mb-1">Appearance</h2>
+          <p className="text-sm text-foreground/70 mb-4">Choose how ExpenseTracker looks.</p>
+          <div className="grid grid-cols-3 gap-2" role="radiogroup" aria-label="Theme">
+            {([
+              { value: 'light', label: 'Light', icon: Sun },
+              { value: 'dark', label: 'Dark', icon: Moon },
+              { value: 'system', label: 'System', icon: Monitor },
+            ] as const).map(({ value, label, icon: Icon }) => (
+              <button
+                key={value}
+                role="radio"
+                aria-checked={preference === value}
+                onClick={() => setPreference(value)}
+                className={`flex flex-col items-center gap-1 py-3 rounded-xl border text-sm transition-all ${
+                  preference === value
+                    ? 'border-primary bg-primary/10 text-primary'
+                    : 'border-border hover:border-primary/50'
+                }`}
+              >
+                <Icon className="w-5 h-5" />
+                {label}
+              </button>
+            ))}
+          </div>
+        </div>
 
         {/* Data Management Section */}
         <motion.div
@@ -313,7 +351,7 @@ export default function SettingsPage() {
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm"
+            className="fixed inset-0 z-50 flex items-center justify-center modal-overlay"
           >
             <motion.div
               initial={{ scale: 0.9, opacity: 0 }}

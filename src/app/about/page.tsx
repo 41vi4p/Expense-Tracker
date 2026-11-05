@@ -56,7 +56,7 @@ const developers = [
 ];
 
 const techStack = [
-  { name: 'Next.js 15', description: 'React framework', icon: Code, color: 'text-gray-300', url: 'https://nextjs.org/docs' },
+  { name: 'Next.js 16', description: 'React framework', icon: Code, color: 'text-foreground/70', url: 'https://nextjs.org/docs' },
   { name: 'TypeScript', description: 'Type-safe JavaScript', icon: Code, color: 'text-blue-400', url: 'https://www.typescriptlang.org/docs/' },
   { name: 'Firebase', description: 'Auth & Database', icon: Database, color: 'text-orange-400', url: 'https://firebase.google.com/docs' },
   { name: 'Tailwind CSS', description: 'CSS framework', icon: Palette, color: 'text-cyan-400', url: 'https://tailwindcss.com/docs' },

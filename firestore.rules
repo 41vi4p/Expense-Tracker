@@ -1,0 +1,64 @@
+rules_version = '2';
+
+// Every document is private to the signed-in user that owns it.
+// Deploy with: firebase deploy --only firestore:rules
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function signedIn() {
+      return request.auth != null;
+    }
+    function isOwner(uid) {
+      return signedIn() && request.auth.uid == uid;
+    }
+    function validStr(v, max) {
+      return v is string && v.size() > 0 && v.size() <= max;
+    }
+
+    match /transactions/{id} {
+      allow read: if isOwner(resource.data.userId);
+      allow create: if isOwner(request.resource.data.userId)
+        && request.resource.data.type in ['income', 'expense']
+        && request.resource.data.amount is number
+        && request.resource.data.amount > 0
+        && request.resource.data.amount <= 1000000000
+        && validStr(request.resource.data.category, 100)
+        && request.resource.data.description is string
+        && request.resource.data.description.size() <= 200
+        && request.resource.data.date is timestamp;
+      allow update: if isOwner(resource.data.userId)
+        && request.resource.data.userId == resource.data.userId
+        && request.resource.data.type in ['income', 'expense']
+        && request.resource.data.amount is number
+        && request.resource.data.amount > 0
+        && request.resource.data.amount <= 1000000000
+        && request.resource.data.description.size() <= 200;
+      allow delete: if isOwner(resource.data.userId);
+    }
+
+    match /notes/{id} {
+      allow read: if isOwner(resource.data.userId);
+      allow create: if isOwner(request.resource.data.userId)
+        && validStr(request.resource.data.title, 200)
+        && request.resource.data.content is string
+        && request.resource.data.content.size() <= 10000;
+      allow update: if isOwner(resource.data.userId)
+        && request.resource.data.userId == resource.data.userId
+        && validStr(request.resource.data.title, 200)
+        && request.resource.data.content.size() <= 10000;
+      allow delete: if isOwner(resource.data.userId);
+    }
+
+    // Activity logs are append-only for the owner; they can never be edited.
+    match /activity_logs/{id} {
+      allow read: if isOwner(resource.data.userId);
+      allow create: if isOwner(request.resource.data.userId);
+      allow update: if false;
+      allow delete: if isOwner(resource.data.userId);
+    }
+
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

@@ -1,7 +1,7 @@
 # ExpenseTracker
 
 <p>
-  <img alt="Version" src="https://img.shields.io/badge/version-3.0.4-06b6d4?style=for-the-badge&labelColor=0a0a0a" />
+  <img alt="Version" src="https://img.shields.io/badge/version-3.0.5-06b6d4?style=for-the-badge&labelColor=0a0a0a" />
   <img alt="License: MIT" src="https://img.shields.io/badge/license-MIT-06b6d4?style=for-the-badge&labelColor=0a0a0a" />
   <img alt="Next.js" src="https://img.shields.io/badge/Next.js-16-000000?style=for-the-badge&logo=next.js&logoColor=white&labelColor=0a0a0a" />
   <img alt="TypeScript" src="https://img.shields.io/badge/TypeScript-5-3178C6?style=for-the-badge&logo=typescript&logoColor=white&labelColor=0a0a0a" />
@@ -13,7 +13,7 @@ A modern expense tracking app built with Next.js and Firebase, available on the 
 
 ### 🔗 [**Live Demo → expense-tracker-41vi4p.vercel.app**](https://expense-tracker-41vi4p.vercel.app/)
 
-## 🆕 Version 3.0.4
+## 🆕 Version 3.0.5
 
 - **📱 Android app** - download the APK from [Releases](https://github.com/41vi4p/Expense-Tracker/releases/latest); a new build is published automatically for every version
 - **🌗 Light & dark themes** - follows your system by default; switch from the header or Settings -> Appearance

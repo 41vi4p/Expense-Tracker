@@ -7,6 +7,11 @@ The text of the matching section is used verbatim as the GitHub release notes.
 
 Older history (pre-3.0) lives in [VERSION_HISTORY_LEGACY.md](./VERSION_HISTORY_LEGACY.md).
 
+## [3.0.5] - 2026-11-05
+
+### Fixed
+- Android release build failed with "Value is null" while evaluating `build.gradle`; the app version is now read correctly, so the APK builds.
+
 ## [3.0.4] - 2026-11-05
 
 ### Changed

@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { ThemeProvider } from "@/contexts/ThemeContext";
+import { DatabaseProvider } from "@/contexts/DatabaseContext";
 import { Toaster } from "react-hot-toast";
 
 export const metadata: Metadata = {
@@ -38,10 +39,11 @@ export default function RootLayout({
       </head>
       <body className="font-body antialiased bg-background text-foreground min-h-screen">
         <AuthProvider>
-          <ThemeProvider>
-            <div className="min-h-screen bg-gradient-to-br from-background via-surface-dark to-background">
-              {children}
-              <Toaster
+          <DatabaseProvider>
+            <ThemeProvider>
+              <div className="min-h-screen bg-gradient-to-br from-background via-surface-dark to-background">
+                {children}
+                <Toaster
                 position="top-center"
                 toastOptions={{
                   duration: 4000,
@@ -66,9 +68,10 @@ export default function RootLayout({
                     },
                   },
                 }}
-              />
-            </div>
-          </ThemeProvider>
+                />
+              </div>
+            </ThemeProvider>
+          </DatabaseProvider>
         </AuthProvider>
       </body>
     </html>

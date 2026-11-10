@@ -8,7 +8,7 @@ import { useEffect, useState, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { BarChart3, PieChart, TrendingUp, Calendar } from 'lucide-react';
 import { Transaction, EXPENSE_CATEGORIES, INCOME_CATEGORIES } from '@/types';
-import { getUserTransactions, getUserStats } from '@/lib/firestore';
+import { useDatabase } from '@/contexts/DatabaseContext';
 import toast from 'react-hot-toast';
 import DashboardLayout from '@/components/DashboardLayout';
 
@@ -22,21 +22,15 @@ interface CategoryStats {
 
 export default function AnalyticsPage() {
   const { user } = useAuth();
+  const { getUserTransactions, getUserStats, dbType, supabaseConfig } = useDatabase();
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [stats, setStats] = useState({ totalIncome: 0, totalExpenses: 0, balance: 0 });
   const [loading, setLoading] = useState(true);
   const [expensesByCategory, setExpensesByCategory] = useState<CategoryStats[]>([]);
   const [incomeByCategory, setIncomeByCategory] = useState<CategoryStats[]>([]);
 
-
-  useEffect(() => {
-    if (user) {
-      loadData();
-    }
-  }, [user]); // eslint-disable-line react-hooks/exhaustive-deps
-
   const loadData = useCallback(async () => {
-    if (!user) return;
+    if (!user?.uid) return;
     
     try {
       setLoading(true);
@@ -54,7 +48,13 @@ export default function AnalyticsPage() {
     } finally {
       setLoading(false);
     }
-  }, [user]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [user, getUserTransactions, getUserStats]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  useEffect(() => {
+    if (user?.uid) {
+      loadData();
+    }
+  }, [user?.uid, dbType, supabaseConfig, loadData]);
 
   const calculateCategoryStats = useCallback((transactions: Transaction[]) => {
     const allCategories = [...EXPENSE_CATEGORIES, ...INCOME_CATEGORIES];

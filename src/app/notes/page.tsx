@@ -22,7 +22,7 @@ import {
 import { useAuth } from '@/contexts/AuthContext';
 import DashboardLayout from '@/components/DashboardLayout';
 import { Note } from '@/types';
-import { getUserNotes, addNote, updateNote, deleteNote } from '@/lib/firestore';
+import { useDatabase } from '@/contexts/DatabaseContext';
 import toast from 'react-hot-toast';
 
 const NOTE_CATEGORIES = {
@@ -35,6 +35,7 @@ const NOTE_CATEGORIES = {
 
 export default function NotesPage() {
   const { user } = useAuth();
+  const { getUserNotes, addNote, updateNote, deleteNote, dbType, supabaseConfig } = useDatabase();
   const [notes, setNotes] = useState<Note[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
@@ -48,15 +49,9 @@ export default function NotesPage() {
   const [category, setCategory] = useState<Note['category']>('general');
   const [tags, setTags] = useState<string>('');
 
-  useEffect(() => {
-    if (user) {
-      loadNotes();
-    }
-  }, [user]); // eslint-disable-line react-hooks/exhaustive-deps
-
   const loadNotes = useCallback(async () => {
     try {
-      if (!user) return;
+      if (!user?.uid) return;
       const userNotes = await getUserNotes(user.uid);
       setNotes(userNotes);
     } catch (error) {
@@ -65,7 +60,13 @@ export default function NotesPage() {
     } finally {
       setLoading(false);
     }
-  }, [user]);
+  }, [user, getUserNotes]);
+
+  useEffect(() => {
+    if (user?.uid) {
+      loadNotes();
+    }
+  }, [user?.uid, dbType, supabaseConfig, loadNotes]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

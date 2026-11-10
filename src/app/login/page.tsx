@@ -1,15 +1,19 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { Zap, Info } from 'lucide-react';
+import { Zap, Info, Database } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
+import { useDatabase } from '@/contexts/DatabaseContext';
 import { logUserAction, LOG_ACTIONS } from '@/lib/logging';
 import GoogleIcon from '@/components/GoogleIcon';
+import SupabaseConnectModal from '@/components/SupabaseConnectModal';
 
 export default function LoginPage() {
   const { user, loading, signInWithGoogle } = useAuth();
+  const { isSupabaseConfigured, dbType } = useDatabase();
+  const [showSupabaseModal, setShowSupabaseModal] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
@@ -99,8 +103,30 @@ export default function LoginPage() {
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
+            transition={{ delay: 0.5, duration: 0.5 }}
+            className="mt-6 pt-4 border-t border-border/40"
+          >
+            <button
+              onClick={() => setShowSupabaseModal(true)}
+              className="w-full py-2.5 px-3 rounded-xl border border-border/80 hover:border-emerald-500/50 bg-surface/40 hover:bg-surface/70 transition-all flex items-center justify-between text-xs text-foreground/80 group"
+            >
+              <span className="flex items-center gap-2">
+                <Database className="w-4 h-4 text-emerald-400 group-hover:scale-110 transition-transform" />
+                <span>
+                  Database: <strong className="text-foreground uppercase">{isSupabaseConfigured ? 'Supabase Connected' : 'One-Click Supabase Deploy'}</strong>
+                </span>
+              </span>
+              <span className="text-[10px] text-emerald-400 font-medium underline">
+                {isSupabaseConfigured ? 'Manage' : 'Setup Database'}
+              </span>
+            </button>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
             transition={{ delay: 0.6, duration: 0.5 }}
-            className="mt-8 pt-6 border-t border-border/50"
+            className="mt-6 pt-4 border-t border-border/50"
           >
             <div className="text-center space-y-2">
               <p className="text-xs text-foreground/50 font-body">
@@ -110,7 +136,7 @@ export default function LoginPage() {
                 <div>• Real-time tracking</div>
                 <div>• Smart categorization</div>
                 <div>• Visual analytics</div>
-                <div>• Secure cloud sync</div>
+                <div>• Auto cross-device sync</div>
               </div>
             </div>
           </motion.div>
@@ -132,6 +158,11 @@ export default function LoginPage() {
           </button>
         </motion.div>
 
+        {/* Supabase Connect Modal */}
+        <SupabaseConnectModal
+          isOpen={showSupabaseModal}
+          onClose={() => setShowSupabaseModal(false)}
+        />
       </motion.div>
     </div>
   );

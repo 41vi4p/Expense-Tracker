@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, FileText, Calendar, Tag } from 'lucide-react';
 import { EXPENSE_CATEGORIES, INCOME_CATEGORIES } from '@/types';
-import { addTransaction } from '@/lib/firestore';
+import { useDatabase } from '@/contexts/DatabaseContext';
 import toast from 'react-hot-toast';
 
 interface AddTransactionModalProps {
@@ -14,6 +14,7 @@ interface AddTransactionModalProps {
 }
 
 export default function AddTransactionModal({ onClose, onTransactionAdded, userId }: AddTransactionModalProps) {
+  const { addTransaction } = useDatabase();
   const [type, setType] = useState<'income' | 'expense'>('expense');
   const [amount, setAmount] = useState('');
   const [description, setDescription] = useState('');

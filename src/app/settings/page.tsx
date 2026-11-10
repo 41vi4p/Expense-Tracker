@@ -5,6 +5,7 @@ export const dynamic = 'force-dynamic';
 
 import { useAuth } from '@/contexts/AuthContext';
 import { useTheme } from '@/contexts/ThemeContext';
+import { useDatabase } from '@/contexts/DatabaseContext';
 import { useEffect, useState, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { 
@@ -19,32 +20,46 @@ import {
   XCircle,
   Sun,
   Moon,
-  Monitor
+  Monitor,
+  Zap,
+  Server,
+  ExternalLink
 } from 'lucide-react';
-import { getUserTransactions, deleteAllUserData, addTransaction } from '@/lib/firestore';
-import { logUserAction, LOG_ACTIONS } from '@/lib/logging';
+import { LOG_ACTIONS } from '@/lib/logging';
 import { MAX_IMPORT_BYTES, MAX_IMPORT_ROWS } from '@/lib/validation';
 import toast from 'react-hot-toast';
 import DashboardLayout from '@/components/DashboardLayout';
+import SupabaseConnectModal from '@/components/SupabaseConnectModal';
 
 export default function SettingsPage() {
   const { user } = useAuth();
   const { preference, setPreference } = useTheme();
+  const {
+    dbType,
+    setDatabaseType,
+    supabaseConfig,
+    isSupabaseConfigured,
+    getUserTransactions,
+    addTransaction,
+    deleteAllUserData,
+    logAction
+  } = useDatabase();
   const [loading, setLoading] = useState(false);
   const [exportLoading, setExportLoading] = useState(false);
   const [importLoading, setImportLoading] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [showSupabaseModal, setShowSupabaseModal] = useState(false);
 
 
   useEffect(() => {
     if (user?.uid) {
       // Log page view
-      logUserAction(user.uid, 'navigation', LOG_ACTIONS.NAVIGATION.PAGE_VIEW, {
+      logAction(user.uid, 'navigation', LOG_ACTIONS.NAVIGATION.PAGE_VIEW, {
         page: 'settings',
         timestamp: new Date().toISOString()
       });
     }
-  }, [user]);
+  }, [user, logAction]);
 
   const exportData = useCallback(async () => {
     if (!user?.uid) return;
@@ -73,7 +88,7 @@ export default function SettingsPage() {
       document.body.removeChild(link);
       URL.revokeObjectURL(url);
 
-      logUserAction(user.uid, 'settings', LOG_ACTIONS.SETTINGS.DATA_EXPORT, {
+      logAction(user.uid, 'settings', LOG_ACTIONS.SETTINGS.DATA_EXPORT, {
         transactionCount: transactions.length,
         timestamp: new Date().toISOString()
       });
@@ -85,7 +100,7 @@ export default function SettingsPage() {
     } finally {
       setExportLoading(false);
     }
-  }, [user]);
+  }, [user, getUserTransactions, logAction]);
 
   const importData = useCallback(async (file: File) => {
     if (!user?.uid) return;
@@ -122,7 +137,7 @@ export default function SettingsPage() {
         }
       }
 
-      logUserAction(user.uid, 'settings', LOG_ACTIONS.SETTINGS.DATA_IMPORT, {
+      logAction(user.uid, 'settings', LOG_ACTIONS.SETTINGS.DATA_IMPORT, {
         transactionCount: importedCount,
         timestamp: new Date().toISOString()
       });
@@ -134,7 +149,7 @@ export default function SettingsPage() {
     } finally {
       setImportLoading(false);
     }
-  }, [user]);
+  }, [user, addTransaction, logAction]);
 
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -150,7 +165,7 @@ export default function SettingsPage() {
       setLoading(true);
       await deleteAllUserData(user.uid);
       
-      logUserAction(user.uid, 'settings', LOG_ACTIONS.SETTINGS.DATA_DELETE, {
+      logAction(user.uid, 'settings', LOG_ACTIONS.SETTINGS.DATA_DELETE, {
         timestamp: new Date().toISOString()
       });
 
@@ -162,7 +177,7 @@ export default function SettingsPage() {
     } finally {
       setLoading(false);
     }
-  }, [user]);
+  }, [user, deleteAllUserData, logAction]);
 
   if (loading) {
     return (
@@ -219,6 +234,62 @@ export default function SettingsPage() {
             ))}
           </div>
         </div>
+
+        {/* Supabase & Cloud Database Configuration */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.05 }}
+          className="mb-6"
+        >
+          <div className="backdrop-blur-glass border border-border/50 rounded-2xl p-6">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
+              <div>
+                <h2 className="text-xl font-display font-semibold flex items-center">
+                  <Database className="w-5 h-5 mr-2 text-primary" />
+                  Database & Cloud Sync
+                </h2>
+                <p className="text-sm text-foreground/70 mt-1">
+                  Active backend: <span className="font-semibold text-primary uppercase">{dbType}</span>
+                  {supabaseConfig?.url && (
+                    <span className="block text-xs text-foreground/60 truncate mt-0.5">
+                      Supabase: {supabaseConfig.url}
+                    </span>
+                  )}
+                </p>
+              </div>
+
+              <div className="flex flex-wrap items-center gap-2">
+                {isSupabaseConfigured && (
+                  <button
+                    onClick={() => setDatabaseType(dbType === 'supabase' ? 'firebase' : 'supabase')}
+                    className="px-3 py-2 text-xs font-semibold rounded-xl border border-border hover:border-primary/50 text-foreground transition-all"
+                  >
+                    Switch to {dbType === 'supabase' ? 'Firebase' : 'Supabase'}
+                  </button>
+                )}
+                <button
+                  onClick={() => setShowSupabaseModal(true)}
+                  className="inline-flex items-center gap-1.5 px-4 py-2 bg-gradient-primary hover:opacity-90 text-white rounded-xl text-xs font-semibold shadow-sm transition-all"
+                >
+                  <Zap className="w-4 h-4" />
+                  <span>{isSupabaseConfigured ? 'Configure Supabase' : 'One-Click Supabase Setup'}</span>
+                </button>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 pt-2 border-t border-border/40 text-xs text-foreground/70">
+              <div className="flex items-center gap-2 p-3 bg-surface/30 rounded-xl">
+                <Server className="w-4 h-4 text-emerald-400 shrink-0" />
+                <span>One-click deploy your personal database on Supabase with zero database expertise.</span>
+              </div>
+              <div className="flex items-center gap-2 p-3 bg-surface/30 rounded-xl">
+                <CheckCircle className="w-4 h-4 text-primary shrink-0" />
+                <span>Synchronized with your Google Account across all devices on login.</span>
+              </div>
+            </div>
+          </div>
+        </motion.div>
 
         {/* Data Management Section */}
         <motion.div
@@ -345,6 +416,12 @@ export default function SettingsPage() {
             </div>
           </div>
         </motion.div>
+
+        {/* Supabase Connect Modal */}
+        <SupabaseConnectModal
+          isOpen={showSupabaseModal}
+          onClose={() => setShowSupabaseModal(false)}
+        />
 
         {/* Delete Confirmation Modal */}
         {user && showDeleteConfirm && (

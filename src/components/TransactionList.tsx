@@ -3,7 +3,7 @@
 import { motion } from 'framer-motion';
 import { Edit, Trash2, Calendar } from 'lucide-react';
 import { Transaction, EXPENSE_CATEGORIES, INCOME_CATEGORIES } from '@/types';
-import { deleteTransaction } from '@/lib/firestore';
+import { useDatabase } from '@/contexts/DatabaseContext';
 import toast from 'react-hot-toast';
 import { useState } from 'react';
 import EditTransactionModal from './EditTransactionModal';
@@ -16,6 +16,7 @@ interface TransactionListProps {
 }
 
 export default function TransactionList({ transactions, onTransactionUpdate, userId, showActions = false }: TransactionListProps) {
+  const { deleteTransaction } = useDatabase();
   const [editingTransaction, setEditingTransaction] = useState<Transaction | null>(null);
   const allCategories = [...EXPENSE_CATEGORIES, ...INCOME_CATEGORIES];
 

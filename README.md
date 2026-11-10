@@ -1,24 +1,26 @@
 # ExpenseTracker
 
 <p>
-  <img alt="Version" src="https://img.shields.io/badge/version-3.0.5-06b6d4?style=for-the-badge&labelColor=0a0a0a" />
+  <img alt="Version" src="https://img.shields.io/badge/version-3.1.0-06b6d4?style=for-the-badge&labelColor=0a0a0a" />
   <img alt="License: MIT" src="https://img.shields.io/badge/license-MIT-06b6d4?style=for-the-badge&labelColor=0a0a0a" />
   <img alt="Next.js" src="https://img.shields.io/badge/Next.js-16-000000?style=for-the-badge&logo=next.js&logoColor=white&labelColor=0a0a0a" />
   <img alt="TypeScript" src="https://img.shields.io/badge/TypeScript-5-3178C6?style=for-the-badge&logo=typescript&logoColor=white&labelColor=0a0a0a" />
+  <img alt="Supabase" src="https://img.shields.io/badge/Supabase-3ECF8E?style=for-the-badge&logo=supabase&logoColor=white&labelColor=0a0a0a" />
   <img alt="Firebase" src="https://img.shields.io/badge/Firebase-11-FFCA28?style=for-the-badge&logo=firebase&logoColor=black&labelColor=0a0a0a" />
   <img alt="Deployed on Vercel" src="https://img.shields.io/badge/Deployed_on-Vercel-black?style=for-the-badge&logo=vercel&logoColor=white&labelColor=0a0a0a" />
 </p>
 
-A modern expense tracking app built with Next.js and Firebase, available on the web and as an Android app. Includes light and dark themes, analytics and Google sign-in.
+A modern expense tracking app built with Next.js, Supabase, and Firebase, available on the web and as an Android app. Includes light and dark themes, analytics and Google sign-in.
 
 ### 🔗 [**Live Demo → expense-tracker-41vi4p.vercel.app**](https://expense-tracker-41vi4p.vercel.app/)
 
-## 🆕 Version 3.0.5
+## 🆕 Version 3.1.0
 
+- **⚡ One-Click Supabase Deployment** - Run and connect your personal cloud database in seconds with no database experience needed
+- **🔄 Cross-Device Account Sync** - Database credentials link automatically to your Google account; logging in anywhere reconnects you seamlessly
 - **📱 Android app** - download the APK from [Releases](https://github.com/41vi4p/Expense-Tracker/releases/latest); a new build is published automatically for every version
 - **🌗 Light & dark themes** - follows your system by default; switch from the header or Settings -> Appearance
-- **🔒 Security hardening** - Firestore security rules, input validation, patched dependencies, security headers, no PII in logs
-- **✨ Refreshed UI** - calmer palette, frosted surfaces, smoother motion
+- **🔒 Security hardening** - Row level security & Firestore security rules, input validation, patched dependencies, security headers
 
 [📖 **Full changelog**](./docs/CHANGELOG.md) | [⭐ **Star us on GitHub**](https://github.com/41vi4p/Expense-Tracker) | [🌐 **Try the Live Demo**](https://expense-tracker-41vi4p.vercel.app/)
 
@@ -81,6 +83,10 @@ NEXT_PUBLIC_FIREBASE_PROJECT_ID=your_project_id
 NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=your_project_id.appspot.com
 NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=your_sender_id
 NEXT_PUBLIC_FIREBASE_APP_ID=your_app_id
+
+# (Optional) Supabase Configuration
+NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
 ```
 
 4. Set up Firebase:

@@ -8,9 +8,9 @@ import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { Plus, TrendingUp, TrendingDown, Wallet, PieChart, BarChart3 } from 'lucide-react';
 import { Transaction } from '@/types';
-import { getUserTransactions } from '@/lib/firestore';
 import { useAuth } from '@/contexts/AuthContext';
-import { logUserAction, LOG_ACTIONS } from '@/lib/logging';
+import { useDatabase } from '@/contexts/DatabaseContext';
+import { LOG_ACTIONS } from '@/lib/logging';
 import toast from 'react-hot-toast';
 import DashboardLayout from '@/components/DashboardLayout';
 import StatsCard from '@/components/StatsCard';
@@ -23,24 +23,13 @@ import TrendChart from '@/components/charts/TrendChart';
 export default function DashboardPage() {
   const router = useRouter();
   const { user } = useAuth();
+  const { getUserTransactions, logAction, dbType, supabaseConfig } = useDatabase();
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [stats, setStats] = useState({ totalIncome: 0, totalExpenses: 0, balance: 0 });
   const [loading, setLoading] = useState(true);
   const [showAddModal, setShowAddModal] = useState(false);
   const [chartType, setChartType] = useState<'pie' | 'bar'>('pie');
   const [trendPeriod, setTrendPeriod] = useState<6 | 12 | 36 | 60>(6);
-
-
-  useEffect(() => {
-    if (user?.uid) {
-      loadData();
-      // Log page view
-      logUserAction(user.uid, 'navigation', LOG_ACTIONS.NAVIGATION.PAGE_VIEW, {
-        page: 'dashboard',
-        timestamp: new Date().toISOString()
-      });
-    }
-  }, [user]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const loadData = useCallback(async () => {
     if (!user?.uid) return;
@@ -59,7 +48,18 @@ export default function DashboardPage() {
     } finally {
       setLoading(false);
     }
-  }, [user]);
+  }, [user, getUserTransactions]);
+
+  useEffect(() => {
+    if (user?.uid) {
+      loadData();
+      // Log page view
+      logAction(user.uid, 'navigation', LOG_ACTIONS.NAVIGATION.PAGE_VIEW, {
+        page: 'dashboard',
+        timestamp: new Date().toISOString()
+      });
+    }
+  }, [user, dbType, supabaseConfig, loadData, logAction]);
 
   const handleTransactionAdded = () => {
     setShowAddModal(false);
@@ -70,7 +70,7 @@ export default function DashboardPage() {
   const handleModalOpen = () => {
     setShowAddModal(true);
     if (user?.uid) {
-      logUserAction(user.uid, 'navigation', LOG_ACTIONS.NAVIGATION.MODAL_OPEN, {
+      logAction(user.uid, 'navigation', LOG_ACTIONS.NAVIGATION.MODAL_OPEN, {
         modal: 'add_transaction',
         timestamp: new Date().toISOString()
       });

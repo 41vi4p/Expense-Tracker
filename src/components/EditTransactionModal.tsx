@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, FileText, Calendar, Tag } from 'lucide-react';
 import { Transaction, EXPENSE_CATEGORIES, INCOME_CATEGORIES } from '@/types';
-import { updateTransaction } from '@/lib/firestore';
+import { useDatabase } from '@/contexts/DatabaseContext';
 import toast from 'react-hot-toast';
 
 interface EditTransactionModalProps {
@@ -14,6 +14,7 @@ interface EditTransactionModalProps {
 }
 
 export default function EditTransactionModal({ transaction, onClose, onTransactionUpdated }: EditTransactionModalProps) {
+  const { updateTransaction } = useDatabase();
   const [type, setType] = useState<'income' | 'expense'>(transaction.type);
   const [amount, setAmount] = useState(transaction.amount.toString());
   const [description, setDescription] = useState(transaction.description);

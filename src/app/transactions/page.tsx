@@ -8,7 +8,7 @@ import { useEffect, useState, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { Filter, Search, Plus } from 'lucide-react';
 import { Transaction } from '@/types';
-import { getUserTransactions } from '@/lib/firestore';
+import { useDatabase } from '@/contexts/DatabaseContext';
 import toast from 'react-hot-toast';
 import DashboardLayout from '@/components/DashboardLayout';
 import TransactionList from '@/components/TransactionList';
@@ -16,23 +16,13 @@ import AddTransactionModal from '@/components/AddTransactionModal';
 
 export default function TransactionsPage() {
   const { user } = useAuth();
+  const { getUserTransactions, dbType, supabaseConfig } = useDatabase();
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [filteredTransactions, setFilteredTransactions] = useState<Transaction[]>([]);
   const [loading, setLoading] = useState(true);
   const [showAddModal, setShowAddModal] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterType, setFilterType] = useState<'all' | 'income' | 'expense'>('all');
-
-
-  useEffect(() => {
-    if (user) {
-      loadTransactions();
-    }
-  }, [user]); // eslint-disable-line react-hooks/exhaustive-deps
-
-  useEffect(() => {
-    filterTransactions();
-  }, [transactions, searchTerm, filterType]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const loadTransactions = useCallback(async () => {
     if (!user?.uid) return;
@@ -47,7 +37,17 @@ export default function TransactionsPage() {
     } finally {
       setLoading(false);
     }
-  }, [user]);
+  }, [user, getUserTransactions]);
+
+  useEffect(() => {
+    if (user?.uid) {
+      loadTransactions();
+    }
+  }, [user?.uid, dbType, supabaseConfig, loadTransactions]);
+
+  useEffect(() => {
+    filterTransactions();
+  }, [transactions, searchTerm, filterType]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const filterTransactions = useCallback(() => {
     let filtered = transactions;

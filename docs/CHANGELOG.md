@@ -7,6 +7,14 @@ The text of the matching section is used verbatim as the GitHub release notes.
 
 Older history (pre-3.0) lives in [VERSION_HISTORY_LEGACY.md](./VERSION_HISTORY_LEGACY.md).
 
+## [3.1.0] - 2026-11-10
+
+### Added
+- **One-Click Supabase Deployment & Setup**: Local and non-technical users can launch and initialize their personal database in 1 click without needing database expertise.
+- **Cross-Device Automatic Database Sync**: Configured Supabase credentials automatically synchronize to the user's Google account, so signing in from any device instantly reconnects to the user's database.
+- **Unified Database Architecture**: Seamless switching between Supabase and Firebase across Transactions, Analytics, Notes, and Activity logs.
+- Pre-built SQL schema (`docs/supabase_schema.sql`) with full table structures, indexes, and row-level security policies.
+
 ## [3.0.5] - 2026-11-05
 
 ### Fixed
